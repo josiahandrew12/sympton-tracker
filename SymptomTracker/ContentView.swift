@@ -1261,281 +1261,444 @@ struct CompletionView: View {
 
 // MARK: - Home Screen View
 struct HomeScreenView: View {
+    @State private var selectedDate = Date()
+    
     var body: some View {
-        ZStack {
-            // Brighter light gray background
-            Color(red: 0.98, green: 0.98, blue: 0.98)
-                .ignoresSafeArea()
-            
+        GeometryReader { geometry in
             ScrollView {
-                VStack(spacing: 32) {
-                    // Header Section
-                    VStack(spacing: 24) {
-                        Text("Today, Sat Sep 20th")
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.black)
-                            .padding(.top, 20)
+                VStack(spacing: 0) {
+                    // Header with Profile
+                    HStack {
+                        Spacer()
                         
-                        // Calendar Strip
-                        HStack(spacing: 16) {
-                            // Calendar icon
+                        // Profile Avatar
+                        Circle()
+                            .fill(LinearGradient(
+                                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Text("J")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(.white)
+                            )
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 60) // Increased top padding to avoid status bar
+                    .padding(.bottom, 20)
+                    
+                    // Calendar Section in Box
+                    VStack(spacing: 16) {
+                        HStack {
                             Image(systemName: "calendar")
                                 .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.black)
+                                .foregroundColor(.blue)
                             
-                            HStack(spacing: 12) {
-                                ForEach(["M 15", "T 16", "W 17", "T 18", "F 19", "S 20", "S 21"], id: \.self) { day in
-                                    VStack(spacing: 6) {
-                                        Text(day)
-                                            .font(.system(size: 16, weight: .medium))
-                                            .foregroundColor(day == "S 20" ? .white : .black)
-                                            .frame(width: 44, height: 44)
-                                            .background(
-                                                Circle()
-                                                    .fill(day == "S 20" ? Color.black : Color.clear)
-                                            )
-                                        
-                                        if day == "S 20" {
-                                            Image(systemName: "checkmark")
-                                                .font(.system(size: 12, weight: .bold))
-                                                .foregroundColor(.green)
-                                        } else {
-                                            Spacer()
-                                                .frame(height: 12)
-                                        }
-                                    }
-                                }
-                            }
+                            Text("This Week")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.primary)
                             
                             Spacer()
                         }
                         .padding(.horizontal, 20)
-                    }
-                    
-                    // Quick Check-in Section
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text("Quick Check-in")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.black)
-                            .padding(.horizontal, 20)
+                        .padding(.top, 16)
                         
-                        // Scrollable container for Quick Check-in cards
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
-                                QuickCheckInCard(
+                                ForEach(0..<7) { day in
+                                    ModernDayCard(
+                                        day: day,
+                                        isSelected: day == 2
+                                    )
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                        }
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color(.systemBackground))
+                            .shadow(
+                                color: Color.black.opacity(0.05),
+                                radius: 8,
+                                x: 0,
+                                y: 2
+                            )
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color(.systemGray5), lineWidth: 1)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
+                    
+                    // Health Status Cards
+                    HStack(spacing: 12) {
+                        // Flare Risk Card
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Circle()
+                                    .fill(Color.orange.opacity(0.15))
+                                    .frame(width: 28, height: 28)
+                                    .overlay(
+                                        Image(systemName: "waveform.path.ecg")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.orange)
+                                    )
+                                
+                                Spacer()
+                                
+                                Text("MEDIUM")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(.orange)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color.orange.opacity(0.1))
+                                    )
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Flare Risk")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.primary)
+                                
+                                Text("Sleep pattern")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.white)
+                                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+                        )
+                        
+                        // Insights Card
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Circle()
+                                    .fill(Color.blue.opacity(0.15))
+                                    .frame(width: 28, height: 28)
+                                    .overlay(
+                                        Image(systemName: "brain.head.profile")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.blue)
+                                    )
+                                
+                                Spacer()
+                                
+                                Text("INSIGHT")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(.blue)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color.blue.opacity(0.1))
+                                    )
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Pattern Found")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.primary)
+                                
+                                Text("Fatigue +90min")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.white)
+                                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+                        )
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 20)
+                    
+                    
+                    // Quick Actions Horizontal
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack {
+                            Text("Quick Actions")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(.primary)
+                            Spacer()
+                        }
+                        .padding(.horizontal, 24)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ModernActionCard(
                                     icon: "pills.fill",
                                     title: "Medications",
-                                    color: Color.purple.opacity(0.2),
-                                    iconColor: .purple
+                                    subtitle: "Track your meds",
+                                    color: .blue
                                 )
                                 
-                                QuickCheckInCard(
-                                    icon: "person.wave.2.fill",
-                                    title: "Symptoms",
-                                    color: Color.orange.opacity(0.2),
-                                    iconColor: .orange
-                                )
-                                
-                                QuickCheckInCard(
+                                ModernActionCard(
                                     icon: "heart.fill",
-                                    title: "Measurement",
-                                    color: Color.pink.opacity(0.2),
-                                    iconColor: .pink
+                                    title: "Symptoms",
+                                    subtitle: "Log symptoms",
+                                    color: .red
                                 )
                                 
-                                QuickCheckInCard(
+                                ModernActionCard(
                                     icon: "fork.knife",
-                                    title: "Track Meals",
-                                    color: Color.green.opacity(0.2),
-                                    iconColor: .green
+                                    title: "Meals",
+                                    subtitle: "Food diary",
+                                    color: .orange
                                 )
                                 
-                                QuickCheckInCard(
+                                ModernActionCard(
                                     icon: "bed.double.fill",
-                                    title: "Track Rest",
-                                    color: Color.blue.opacity(0.2),
-                                    iconColor: .blue
+                                    title: "Rest",
+                                    subtitle: "Sleep quality",
+                                    color: .purple
                                 )
                                 
-                                QuickCheckInCard(
+                                ModernActionCard(
                                     icon: "brain.head.profile",
-                                    title: "Track Therapy",
-                                    color: Color.indigo.opacity(0.2),
-                                    iconColor: .indigo
+                                    title: "Therapy",
+                                    subtitle: "Mental health",
+                                    color: .green
+                                )
+                                
+                                ModernActionCard(
+                                    icon: "ruler",
+                                    title: "Vitals",
+                                    subtitle: "Measurements",
+                                    color: .teal
                                 )
                             }
-                            .padding(.horizontal, 20)
+                            .padding(.horizontal, 24)
                         }
                     }
+                    .padding(.bottom, 32)
                     
-                    // Reminders Section
+                    // Today's Reminders
                     VStack(alignment: .leading, spacing: 20) {
-                        Text("Reminders")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.black)
-                            .padding(.horizontal, 20)
-                        
-                        VStack(spacing: 20) {
-                            // Morning Section
-                            VStack(alignment: .leading, spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "sun.max.fill")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(.yellow)
-                                    
-                                    Text("Morning")
-                                        .font(.system(size: 18, weight: .medium))
-                                        .foregroundColor(.black)
-                                }
-                                .padding(.horizontal, 20)
-                                
-                                ReminderBoxCard(
-                                    icon: "pills.fill",
-                                    iconColor: .purple,
-                                    title: "Morning Medications",
-                                    subtitle: "Last recorded Sep 20, 12:32 PM",
-                                    isCompleted: true
-                                )
-                            }
+                        HStack {
+                            Text("Today's Reminders")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(.primary)
+                            Spacer()
                             
-                            // Noon Section
-                            VStack(alignment: .leading, spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "sun.max.fill")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(.yellow)
-                                    
-                                    Text("Noon")
-                                        .font(.system(size: 18, weight: .medium))
-                                        .foregroundColor(.black)
-                                }
-                                .padding(.horizontal, 20)
-                                
-                                ReminderBoxCard(
-                                    icon: "person.wave.2.fill",
-                                    iconColor: .orange,
-                                    title: "Midday Symptom Check",
-                                    subtitle: "Last recorded Sep 20, 12:32 PM",
-                                    isCompleted: true
-                                )
+                            Button("View All") {
+                                // Action
                             }
-                            
-                            // Evening Section
-                            VStack(alignment: .leading, spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "moon.fill")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(.purple)
-                                    
-                                    Text("Evening")
-                                        .font(.system(size: 18, weight: .medium))
-                                        .foregroundColor(.black)
-                                }
-                                .padding(.horizontal, 20)
-                                
-                                ReminderBoxCard(
-                                    icon: "pills.fill",
-                                    iconColor: .purple,
-                                    title: "Evening Medications",
-                                    subtitle: "Last recorded Sep 20, 12:32 PM",
-                                    isCompleted: true
-                                )
-                            }
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.blue)
                         }
+                        .padding(.horizontal, 24)
+                        
+                        VStack(spacing: 12) {
+                            ModernReminderCard(
+                                title: "Morning Medications",
+                                time: "8:00 AM",
+                                isCompleted: false,
+                                icon: "pills.fill"
+                            )
+                            
+                            ModernReminderCard(
+                                title: "Lunch Check-in",
+                                time: "12:00 PM",
+                                isCompleted: true,
+                                icon: "heart.fill"
+                            )
+                            
+                            ModernReminderCard(
+                                title: "Evening Medications",
+                                time: "8:00 PM",
+                                isCompleted: false,
+                                icon: "pills.fill"
+                            )
+                        }
+                        .padding(.horizontal, 24)
                     }
+                    .padding(.bottom, 40)
                 }
-                .padding(.bottom, 40)
             }
         }
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(.systemBackground),
+                    Color(.systemGray6).opacity(0.3)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+        .ignoresSafeArea()
     }
 }
 
-// MARK: - Quick Check-in Card
-struct QuickCheckInCard: View {
-    let icon: String
-    let title: String
-    let color: Color
-    let iconColor: Color
+// MARK: - Modern Day Card
+struct ModernDayCard: View {
+    let day: Int
+    let isSelected: Bool
+    
+    private let dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    private let dayNumbers = ["15", "16", "17", "18", "19", "20", "21"]
     
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 32))
-                .foregroundColor(iconColor)
-                .frame(width: 70, height: 70)
-                .background(color)
-                .cornerRadius(18)
+        VStack(spacing: 10) {
+            Text(dayNames[day])
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.secondary)
             
-            Text(title)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.black)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
+            Text(dayNumbers[day])
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(isSelected ? .white : .primary)
+                .frame(width: 44, height: 44)
+                .background(
+                    Circle()
+                        .fill(isSelected ? Color.blue : Color.clear)
+                )
+        }
+        .frame(width: 56)
+        .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Modern Action Card
+struct ModernActionCard: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            // Icon with gradient background
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [color.opacity(0.2), color.opacity(0.1)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 50, height: 50)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(color)
+            }
+            
+            VStack(spacing: 4) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                
+                Text(subtitle)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+            }
         }
         .frame(width: 100, height: 120)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 16)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(
+                    color: Color.black.opacity(0.05),
+                    radius: 8,
+                    x: 0,
+                    y: 2
                 )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color(.systemGray5), lineWidth: 1)
         )
     }
 }
 
-// MARK: - Reminder Box Card
-struct ReminderBoxCard: View {
-    let icon: String
-    let iconColor: Color
+// MARK: - Modern Reminder Card
+struct ModernReminderCard: View {
     let title: String
-    let subtitle: String
+    let time: String
     let isCompleted: Bool
+    let icon: String
     
     var body: some View {
         HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 24))
-                .foregroundColor(iconColor)
-                .frame(width: 28, height: 28)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(.black)
+            // Status indicator
+            ZStack {
+                Circle()
+                    .fill(isCompleted ? Color.green : Color(.systemGray5))
+                    .frame(width: 12, height: 12)
                 
-                Text(subtitle)
-                    .font(.system(size: 14))
-                    .foregroundColor(.gray)
+                if isCompleted {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(.white)
+                }
+            }
+            
+            // Icon
+            Image(systemName: icon)
+                .font(.system(size: 20, weight: .medium))
+                .foregroundColor(.blue)
+                .frame(width: 24, height: 24)
+            
+            // Content
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.primary)
+                
+                Text(time)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.secondary)
             }
             
             Spacer()
             
-            if isCompleted {
-                Image(systemName: "checkmark")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.white)
-                    .frame(width: 28, height: 28)
-                    .background(Color.blue)
-                    .cornerRadius(8)
-            }
+            // Arrow
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.secondary)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
+        .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                .fill(Color(.systemBackground))
+                .shadow(
+                    color: Color.black.opacity(0.05),
+                    radius: 8,
+                    x: 0,
+                    y: 2
                 )
         )
-        .padding(.horizontal, 20)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color(.systemGray5), lineWidth: 1)
+        )
     }
+}
+
+// MARK: - DateFormatter Extension
+extension DateFormatter {
+    static let dayMonth: DateFormatter = {
+    let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d, yyyy"
+    return formatter
+}()
 }
 
 
