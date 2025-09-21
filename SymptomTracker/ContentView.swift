@@ -22,37 +22,23 @@ struct ContentView: View {
     @State private var selectedGoals: Set<String> = []
 
     var body: some View {
-        ZStack {
-            if showOnboarding {
-                OnboardingFlowView(
-                    currentStep: $currentStep,
-                    userName: $userName,
-                    selectedConditions: $selectedConditions,
-                    selectedSymptoms: $selectedSymptoms,
-                    severityLevel: $severityLevel,
-                    flareFrequency: $flareFrequency,
-                    selectedTriggers: $selectedTriggers,
-                    selectedRoutines: $selectedRoutines,
-                    selectedGoals: $selectedGoals,
-                    showOnboarding: $showOnboarding
-                )
-            } else {
-                // Profile Complete Page
-                ProfileCompleteView(
-                    userName: userName,
-                    selectedConditions: selectedConditions,
-                    selectedSymptoms: selectedSymptoms,
-                    severityLevel: severityLevel,
-                    flareFrequency: flareFrequency,
-                    selectedTriggers: selectedTriggers,
-                    selectedGoals: selectedGoals,
-                    showOnboarding: $showOnboarding,
-                    currentStep: $currentStep
-                )
-            }
+        if showOnboarding {
+            OnboardingFlowView(
+                currentStep: $currentStep,
+                userName: $userName,
+                selectedConditions: $selectedConditions,
+                selectedSymptoms: $selectedSymptoms,
+                severityLevel: $severityLevel,
+                flareFrequency: $flareFrequency,
+                selectedTriggers: $selectedTriggers,
+                selectedRoutines: $selectedRoutines,
+                selectedGoals: $selectedGoals,
+                showOnboarding: $showOnboarding
+            )
+        } else {
+            HomeScreenView()
         }
     }
-
 }
 
 // MARK: - Onboarding Flow
@@ -67,32 +53,31 @@ struct OnboardingFlowView: View {
     @Binding var selectedRoutines: Set<String>
     @Binding var selectedGoals: Set<String>
     @Binding var showOnboarding: Bool
-    
+
     var body: some View {
-        ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
-            VStack {
-                // Progress indicator
-                HStack {
-                    ForEach(0..<8, id: \.self) { step in
+        VStack(spacing: 0) {
+            // Modern Progress indicator
+            VStack(spacing: 12) {
+                HStack(spacing: 8) {
+                    ForEach(0..<10, id: \.self) { step in
                         Circle()
-                            .fill(step <= currentStep ? Color.blue : Color.gray.opacity(0.3))
+                            .fill(step <= currentStep ? Color.blue : Color.black.opacity(0.1))
                             .frame(width: 8, height: 8)
+                            .scaleEffect(step == currentStep ? 1.2 : 1.0)
+                            .animation(.easeInOut(duration: 0.2), value: currentStep)
                     }
                 }
-                .padding(.top, 20)
                 
-                Spacer()
-                
-                // Current step content
-                Group {
+                Text("Step \(currentStep + 1) of 10")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.secondary)
+            }
+            .padding(.top, 20)
+            .padding(.bottom, 10)
+            
+            // Current step content
+            ScrollView {
+                VStack(spacing: 0) {
                     switch currentStep {
                     case 0:
                         WelcomeView()
@@ -103,82 +88,263 @@ struct OnboardingFlowView: View {
                     case 3:
                         AddSymptomsView(selectedSymptoms: $selectedSymptoms)
                     case 4:
-                        SeverityAssessmentView(severityLevel: $severityLevel)
-                    case 5:
                         FlareFrequencyView(flareFrequency: $flareFrequency)
-                    case 6:
+                    case 5:
                         TriggersView(selectedTriggers: $selectedTriggers)
+                    case 6:
+                        DailyRoutinesView(selectedRoutines: $selectedRoutines)
                     case 7:
                         GoalsView(selectedGoals: $selectedGoals, showOnboarding: $showOnboarding)
+                    case 8:
+                        CompletionView(showOnboarding: $showOnboarding)
                     default:
                         WelcomeView()
                     }
                 }
-                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-                .animation(.easeInOut(duration: 0.3), value: currentStep)
+            }
+            
+            // Navigation buttons
+            HStack {
+                if currentStep > 0 {
+                    Button(action: {
+                        withAnimation {
+                            currentStep -= 1
+                        }
+                    }) {
+                        Image(systemName: "arrow.left")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                            .frame(width: 50, height: 50)
+                            .background(Color.blue.opacity(0.1))
+                            .clipShape(Circle())
+                    }
+                }
                 
                 Spacer()
                 
-                // Navigation buttons
-                HStack {
-                    if currentStep > 0 {
-                        Button("Back") {
-                            withAnimation {
-                                currentStep -= 1
-                            }
+                if currentStep < 8 {
+                    Button(action: {
+        withAnimation {
+                            currentStep += 1
                         }
-                        .foregroundColor(.blue)
-                        .padding()
-                    }
-                    
-                    Spacer()
-                    
-                    if currentStep < 7 {
-                        Button("Next") {
-                            withAnimation {
-                                currentStep += 1
-                            }
-                        }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 12)
-                        .background(Color.blue)
-                        .cornerRadius(25)
+                    }) {
+                        Image(systemName: "arrow.right")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                            .frame(width: 50, height: 50)
+                            .background(Color.blue.opacity(0.1))
+                            .clipShape(Circle())
                     }
                 }
-                .padding(.horizontal, 30)
-                .padding(.bottom, 30)
             }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 40)
         }
+        .background(Color.white)
     }
 }
 
 // MARK: - Welcome View
 struct WelcomeView: View {
     var body: some View {
-        VStack(spacing: 40) {
-            Spacer()
+        ZStack {
+            // Background
+            Color.white
+                .ignoresSafeArea()
             
-            VStack(spacing: 20) {
-                Text("Welcome to")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
+            VStack(spacing: 0) {
+                // Illustration Section
+                VStack(spacing: 0) {
+                    // Ground line
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 2)
+                        .padding(.horizontal, 40)
+                    
+                    // Illustration
+                    ZStack {
+                        // Background elements
+                        VStack {
+                            Spacer()
+                            
+                            HStack {
+                                // Plant on the left
+                                VStack(spacing: 0) {
+                                    // Plant pot
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.black)
+                                        .frame(width: 30, height: 20)
+                                    
+                                    // Plant leaves
+                                    VStack(spacing: -5) {
+                                        ForEach(0..<3, id: \.self) { _ in
+                                            Ellipse()
+                                                .fill(Color.green)
+                                                .frame(width: 25, height: 15)
+                                        }
+                                    }
+                                }
+                                .padding(.leading, 40)
+                                
+                                Spacer()
+                                
+                                // Woman character
+                                VStack(spacing: 0) {
+                                    // Head with hair and headband
+                                    ZStack {
+                                        // Hair
+                                        Ellipse()
+                                            .fill(Color.black)
+                                            .frame(width: 50, height: 45)
+                                        
+                                        // Headband
+                                        Rectangle()
+                                            .fill(Color.purple)
+                                            .frame(width: 60, height: 8)
+                                            .offset(y: -15)
+                                        
+                                        // Face
+                                        Circle()
+                                            .fill(Color.orange.opacity(0.8))
+                                            .frame(width: 40, height: 40)
+                                        
+                                        // Smile
+                                        Path { path in
+                                            path.addArc(center: CGPoint(x: 0, y: 5), radius: 8, startAngle: .degrees(0), endAngle: .degrees(180), clockwise: false)
+                                        }
+                                        .stroke(Color.black, lineWidth: 2)
+                                        .frame(width: 16, height: 8)
+                                    }
+                                    
+                                    // Body
+                                    VStack(spacing: 0) {
+                                        // Top (yellow)
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color.yellow)
+                                            .frame(width: 45, height: 30)
+                                        
+                                        // Pants (purple)
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .fill(Color.purple)
+                                            .frame(width: 40, height: 25)
+                                    }
+                                    
+                                    // Arms and donuts
+                                    HStack(spacing: 0) {
+                                        // Left arm with tray
+                                        VStack {
+                                            Rectangle()
+                                                .fill(Color.orange.opacity(0.8))
+                                                .frame(width: 8, height: 20)
+                                            
+                                            // Tray with donuts
+                                            ZStack {
+                                                RoundedRectangle(cornerRadius: 4)
+                                                    .fill(Color.black)
+                                                    .frame(width: 35, height: 8)
+                                                
+                                                HStack(spacing: 2) {
+                                                    ForEach(0..<3, id: \.self) { _ in
+                                                        Circle()
+                                                            .fill(Color.pink)
+                                                            .frame(width: 8, height: 8)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        // Right arm with donut
+                                        VStack {
+                                            Rectangle()
+                                                .fill(Color.orange.opacity(0.8))
+                                                .frame(width: 8, height: 15)
+                                            
+                                            Circle()
+                                                .fill(Color.pink)
+                                                .frame(width: 12, height: 12)
+                                        }
+                                    }
+                                    .offset(y: -10)
+                                }
+                                
+                                Spacer()
+                                
+                                // Table and lamp on the right
+                                VStack(spacing: 0) {
+                                    // Lamp
+                                    VStack(spacing: 0) {
+                                        // Wire
+                                        Rectangle()
+                                            .fill(Color.black)
+                                            .frame(width: 1, height: 20)
+                                        
+                                        // Lamp shade
+                                        Ellipse()
+                                            .fill(Color.purple)
+                                            .frame(width: 25, height: 15)
+                                        
+                                        // Light
+                                        Ellipse()
+                                            .fill(Color.yellow.opacity(0.3))
+                                            .frame(width: 30, height: 20)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    // Table
+                                    VStack(spacing: 0) {
+                                        // Table top
+                                        Circle()
+                                            .fill(Color.white)
+                                            .frame(width: 30, height: 8)
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(Color.black, lineWidth: 1)
+                                            )
+                                        
+                                        // Table legs
+                                        HStack(spacing: 15) {
+                                            Rectangle()
+                                                .fill(Color.black)
+                                                .frame(width: 2, height: 20)
+                                            
+                                            Rectangle()
+                                                .fill(Color.black)
+                                                .frame(width: 2, height: 20)
+                                        }
+                                    }
+                                }
+                                .padding(.trailing, 40)
+                            }
+                            .frame(height: 200)
+                        }
+                    }
+                }
                 
-                Text("Symptom Tracker")
-                    .font(.system(size: 23, weight: .bold))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
+                Spacer()
                 
-                Text("Let's help you track and manage your health journey")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
+                // Welcome Text
+                VStack(spacing: 16) {
+                    Text("Welcome to")
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.secondary)
+                    
+                    Text("your personal")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.black)
+                    
+                    Text("health tracker")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.black)
+                }
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+                
+                Spacer()
             }
-            
-            Spacer()
         }
-        .padding(.top, 60)
     }
 }
 
@@ -186,47 +352,63 @@ struct WelcomeView: View {
 struct WhoAreYouView: View {
     @Binding var userName: String
     @FocusState private var isTextFieldFocused: Bool
-    
+
     var body: some View {
-        VStack(spacing: 40) {
-            VStack(spacing: 20) {
-                Text("Who are you?")
-                    .font(.system(size: 23, weight: .bold))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                
-                Text("Take control of your wellness journey with personalized health insights.")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-            }
+        VStack(spacing: 0) {
+            Spacer()
             
-            VStack(spacing: 0) {
-                TextField("Your name", text: $userName)
-                    .font(.title3)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(.systemGray6))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(isTextFieldFocused ? Color.blue : Color(.systemGray4), lineWidth: 1)
+            VStack(spacing: 60) {
+                // Header
+                VStack(spacing: 20) {
+                    Text("Let's get to know you")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                    
+                    Text("Personalizing your health journey starts with your name")
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+                
+                // Input Section
+                VStack(spacing: 32) {
+                    VStack(spacing: 16) {
+                        TextField("Enter your name", text: $userName)
+                            .font(.system(size: 22, weight: .medium))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color.black.opacity(0.05))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .stroke(isTextFieldFocused ? Color.blue : Color.black.opacity(0.1), lineWidth: 2)
+                                    )
                             )
-                    )
-                    .focused($isTextFieldFocused)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            isTextFieldFocused = true
+                            .focused($isTextFieldFocused)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    isTextFieldFocused = true
+                                }
+                            }
+                        
+                        if !userName.isEmpty {
+                            Text("Nice to meet you, \(userName)!")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.blue)
+                                .transition(.opacity.combined(with: .scale))
                         }
                     }
+                }
+                .padding(.horizontal, 40)
             }
-            .padding(.horizontal, 40)
             
             Spacer()
         }
-        .padding(.top, 60)
+        .padding(.horizontal, 40)
     }
 }
 
@@ -238,109 +420,118 @@ struct AddConditionsView: View {
         "Functional neurological disorder", "Autonomic dysfunction", "Chronic Pain", "Fibromyalgia", 
         "Arthritis", "Migraine", "IBS", "Crohn's Disease", "Lupus", "MS"
     ]
-    
+
     var body: some View {
-        VStack(spacing: 30) {
-            VStack(spacing: 20) {
-                Text("Add conditions")
-                    .font(.system(size: 23, weight: .bold))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-            }
+        VStack(spacing: 0) {
+            Spacer()
             
-            // Instruction box
-            HStack(spacing: 12) {
-                Image(systemName: "plus.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.white)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Add your conditions")
-                        .font(.headline)
-                        .foregroundColor(.white)
+            VStack(spacing: 50) {
+                // Header
+                VStack(spacing: 20) {
+                    Text("Your conditions")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
                     
-                    Text("Adding your conditions helps us recommend symptoms to track.")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.9))
+                    Text("Help us understand your health profile")
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
                 }
                 
-                Spacer()
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.blue)
-            )
-            .padding(.horizontal, 40)
-            
-            VStack(spacing: 16) {
-                ForEach(conditions.prefix(2), id: \.self) { condition in
+                // Conditions List
+                VStack(spacing: 12) {
+                    ForEach(conditions.prefix(4), id: \.self) { condition in
+                        ModernConditionCard(
+                            condition: condition,
+                            isSelected: selectedConditions.contains(condition),
+                            onTap: {
+                                if selectedConditions.contains(condition) {
+                                    selectedConditions.remove(condition)
+                                } else {
+                                    selectedConditions.insert(condition)
+                                }
+                            }
+                        )
+                    }
+                    
+                    // Add more button
                     Button(action: {
-                        if selectedConditions.contains(condition) {
-                            selectedConditions.remove(condition)
-                        } else {
-                            selectedConditions.insert(condition)
-                        }
+                        // Add new condition functionality
                     }) {
-                        HStack {
-                            Text(condition)
-                                .font(.body)
-                                .foregroundColor(selectedConditions.contains(condition) ? .blue : .primary)
+                        HStack(spacing: 12) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 16, weight: .light))
+                                .foregroundColor(.black)
+                            
+                            Text("Add another condition")
+                                .font(.system(size: 16, weight: .regular))
+                                .foregroundColor(.black)
                             
                             Spacer()
-                            
-                            if selectedConditions.contains(condition) {
-                                Image(systemName: "checkmark")
-                                    .font(.body)
-                                    .foregroundColor(.blue)
-                            }
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 16)
                         .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemGray6))
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.black.opacity(0.05))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(selectedConditions.contains(condition) ? Color.blue : Color(.systemGray4), lineWidth: 1)
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(Color.black.opacity(0.1), lineWidth: 1)
                                 )
                         )
                     }
                 }
-                
-                // Add a condition button
-                Button(action: {
-                    // Add new condition functionality
-                }) {
-                    HStack {
-                        Image(systemName: "plus")
-                            .font(.body)
-                            .foregroundColor(.primary)
-                        
-                        Text("Add a condition")
-                            .font(.body)
-                            .foregroundColor(.primary)
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(.systemGray6))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color(.systemGray4), lineWidth: 1)
-                            )
-                    )
-                }
+                .padding(.horizontal, 40)
             }
-            .padding(.horizontal, 40)
             
             Spacer()
         }
-        .padding(.top, 60)
+    }
+}
+
+// MARK: - Modern Condition Card
+struct ModernConditionCard: View {
+    let condition: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // Selection indicator
+                ZStack {
+                    Circle()
+                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Circle()
+                            .fill(Color.black)
+                            .frame(width: 12, height: 12)
+                    }
+                }
+                
+                Text(condition)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.leading)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(isSelected ? Color.black.opacity(0.05) : Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.black.opacity(0.2) : Color.black.opacity(0.1), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -348,234 +539,200 @@ struct AddConditionsView: View {
 struct AddSymptomsView: View {
     @Binding var selectedSymptoms: Set<String>
     @State private var searchText = ""
+    @State private var symptomSeverities: [String: Double] = [:]
     
     let visionSymptoms = ["Blurred vision", "Eye pain", "Dry eyes", "Light sensitivity", "Double vision", "Floaters"]
     let skinSymptoms = ["Rash", "Itching", "Dryness", "Redness", "Swelling"]
-    
-    var body: some View {
-        VStack(spacing: 30) {
-            VStack(spacing: 20) {
-                Text("Add Symptoms")
-                    .font(.system(size: 23, weight: .bold))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-            }
-            
-            // Search field
-            HStack {
-                Image(systemName: "plus")
-                    .font(.body)
-                    .foregroundColor(.primary)
-                
-                TextField("Add Symptoms", text: $searchText)
-                    .font(.body)
-                    .textFieldStyle(PlainTextFieldStyle())
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.systemGray6))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color(.systemGray4), lineWidth: 1)
-                    )
-            )
-            .padding(.horizontal, 40)
-            
-            // Your Suggestions
-            HStack {
-                Text("Your Suggestions")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                Text("\(selectedSymptoms.count) selected")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.horizontal, 40)
-            
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Vision & Eye Category
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 8) {
-                            Circle()
-                                .fill(Color.blue)
-                                .frame(width: 24, height: 24)
-                                .overlay(
-                                    Image(systemName: "eye.fill")
-                                        .font(.caption)
-                                        .foregroundColor(.white)
-                                )
-                            
-                            Text("Vision & Eye")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                        }
-                        
-                        LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible())
-                        ], spacing: 8) {
-                            ForEach(visionSymptoms, id: \.self) { symptom in
-                                Button(action: {
-                                    if selectedSymptoms.contains(symptom) {
-                                        selectedSymptoms.remove(symptom)
-                                    } else {
-                                        selectedSymptoms.insert(symptom)
-                                    }
-                                }) {
-                                    HStack {
-                                        Text(symptom)
-                                            .font(.body)
-                                            .foregroundColor(selectedSymptoms.contains(symptom) ? .blue : .primary)
-                                        
-                                        if selectedSymptoms.contains(symptom) {
-                                            Image(systemName: "checkmark")
-                                                .font(.body)
-                                                .foregroundColor(.blue)
-                                        }
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color(.systemGray6))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .stroke(selectedSymptoms.contains(symptom) ? Color.blue : Color(.systemGray4), lineWidth: 1)
-                                            )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    
-                    // Skin & Dermatological Category
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 8) {
-                            Circle()
-                                .fill(Color.orange)
-                                .frame(width: 24, height: 24)
-                                .overlay(
-                                    Image(systemName: "circle.fill")
-                                        .font(.caption)
-                                        .foregroundColor(.white)
-                                )
-                            
-                            Text("Skin & Dermatological")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                        }
-                        
-                        LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible())
-                        ], spacing: 8) {
-                            ForEach(skinSymptoms, id: \.self) { symptom in
-                                Button(action: {
-                                    if selectedSymptoms.contains(symptom) {
-                                        selectedSymptoms.remove(symptom)
-                                    } else {
-                                        selectedSymptoms.insert(symptom)
-                                    }
-                                }) {
-                                    HStack {
-                                        Text(symptom)
-                                            .font(.body)
-                                            .foregroundColor(selectedSymptoms.contains(symptom) ? .blue : .primary)
-                                        
-                                        if selectedSymptoms.contains(symptom) {
-                                            Image(systemName: "checkmark")
-                                                .font(.body)
-                                                .foregroundColor(.blue)
-                                        }
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color(.systemGray6))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .stroke(selectedSymptoms.contains(symptom) ? Color.blue : Color(.systemGray4), lineWidth: 1)
-                                            )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 40)
-            }
-        }
-        .padding(.top, 60)
-    }
-}
 
-// MARK: - Severity Assessment View
-struct SeverityAssessmentView: View {
-    @Binding var severityLevel: Double
-    
     var body: some View {
-        VStack(spacing: 40) {
-            VStack(spacing: 20) {
-                Text("How much do these symptoms affect your daily life?")
-                    .font(.system(size: 23, weight: .bold))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.center)
-                
-                Text("Move the slider to rate the impact on your daily activities")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-            }
+        VStack(spacing: 0) {
+            Spacer()
             
-            // Linear Slider
-            VStack(spacing: 20) {
-                // Impact level display
-                VStack(spacing: 8) {
-                    Text("IMPACT LEVEL")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .fontWeight(.medium)
+            VStack(spacing: 50) {
+                // Header
+                VStack(spacing: 20) {
+                    Text("Track your symptoms")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
                     
-                    Text("\(Int(severityLevel))")
-                        .font(.system(size: 48, weight: .bold))
-                        .foregroundColor(.primary)
-                    
-                    Text(severityLevel >= 7 ? "SEVERE" : severityLevel >= 4 ? "MODERATE" : "MILD")
-                        .font(.caption)
+                    Text("Select symptoms you experience regularly")
+                        .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.secondary)
-                        .fontWeight(.medium)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
                 }
                 
-                // Linear slider
-                VStack(spacing: 12) {
-                    HStack {
-                        Text("1")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text("10")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                // Search field
+                HStack(spacing: 12) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 16, weight: .light))
+                        .foregroundColor(.secondary)
                     
-                    Slider(value: $severityLevel, in: 1...10, step: 1)
-                        .accentColor(.blue)
+                    TextField("Search symptoms...", text: $searchText)
+                        .font(.system(size: 16, weight: .regular))
+                        .textFieldStyle(PlainTextFieldStyle())
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.black.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                        )
+                )
                 .padding(.horizontal, 40)
             }
             
             Spacer()
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Vision & Eye Category
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Vision & Eye")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 40)
+                        
+                        VStack(spacing: 12) {
+                            ForEach(visionSymptoms, id: \.self) { symptom in
+                                ModernSymptomCard(
+                                    symptom: symptom,
+                                    isSelected: selectedSymptoms.contains(symptom),
+                                    severity: Binding(
+                                        get: { symptomSeverities[symptom] ?? 0 },
+                                        set: { symptomSeverities[symptom] = $0 }
+                                    ),
+                                    onTap: {
+                                        if selectedSymptoms.contains(symptom) {
+                                            selectedSymptoms.remove(symptom)
+                                            symptomSeverities.removeValue(forKey: symptom)
+                                        } else {
+                                            selectedSymptoms.insert(symptom)
+                                            if symptomSeverities[symptom] == nil {
+                                                symptomSeverities[symptom] = 5
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 40)
+                    }
+                    
+                    // Skin & Dermatological Category
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Skin & Dermatological")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 40)
+                        
+                        VStack(spacing: 12) {
+                            ForEach(skinSymptoms, id: \.self) { symptom in
+                                ModernSymptomCard(
+                                    symptom: symptom,
+                                    isSelected: selectedSymptoms.contains(symptom),
+                                    severity: Binding(
+                                        get: { symptomSeverities[symptom] ?? 0 },
+                                        set: { symptomSeverities[symptom] = $0 }
+                                    ),
+                                    onTap: {
+                                        if selectedSymptoms.contains(symptom) {
+                                            selectedSymptoms.remove(symptom)
+                                            symptomSeverities.removeValue(forKey: symptom)
+                                        } else {
+                                            selectedSymptoms.insert(symptom)
+                                            if symptomSeverities[symptom] == nil {
+                                                symptomSeverities[symptom] = 5
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 40)
+                    }
+                }
+                .padding(.bottom, 40)
+            }
         }
-        .padding(.top, 60)
+    }
+}
+
+// MARK: - Modern Symptom Card
+struct ModernSymptomCard: View {
+    let symptom: String
+    let isSelected: Bool
+    @Binding var severity: Double
+    let onTap: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            Button(action: onTap) {
+                HStack(spacing: 12) {
+                    // Selection indicator
+                    ZStack {
+                        Circle()
+                            .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                            .frame(width: 20, height: 20)
+                        
+                        if isSelected {
+                            Circle()
+                                .fill(Color.black)
+                                .frame(width: 8, height: 8)
+                        }
+                    }
+                    
+                    Text(symptom)
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.leading)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(isSelected ? Color.black.opacity(0.05) : Color.clear)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(isSelected ? Color.black.opacity(0.2) : Color.black.opacity(0.1), lineWidth: 1)
+                        )
+                )
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            // Severity slider (only show when selected)
+            if isSelected {
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("Severity")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        Text("\(Int(severity))/10")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.black)
+                    }
+                    
+                    Slider(value: $severity, in: 0...10, step: 1)
+                        .accentColor(.black)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.black.opacity(0.03))
+                )
+                .transition(.opacity.combined(with: .scale))
+            }
+        }
     }
 }
 
@@ -586,51 +743,84 @@ struct FlareFrequencyView: View {
     let frequencies = ["Constant", "Intermittent", "Occasionally", "Sporadic"]
     
     var body: some View {
-        VStack(spacing: 40) {
-            VStack(spacing: 20) {
-                Text("How often do your symptoms flare up?")
-                    .font(.system(size: 23, weight: .bold))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.center)
-            }
+        VStack(spacing: 0) {
+            Spacer()
             
-            VStack(spacing: 16) {
-                ForEach(frequencies, id: \.self) { frequency in
-                    Button(action: {
-                        flareFrequency = frequency
-                    }) {
-                        HStack {
-                            Text(frequency)
-                                .font(.body)
-                                .foregroundColor(flareFrequency == frequency ? .blue : .primary)
-                            
-                            Spacer()
-                            
-                            if flareFrequency == frequency {
-                                Image(systemName: "checkmark")
-                                    .font(.body)
-                                    .foregroundColor(.blue)
+            VStack(spacing: 50) {
+                // Header
+                VStack(spacing: 20) {
+                    Text("Flare frequency")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                    
+                    Text("How often do your symptoms flare up?")
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+                
+                // Frequency Options
+                VStack(spacing: 12) {
+                    ForEach(frequencies, id: \.self) { frequency in
+                        ModernFrequencyCard(
+                            frequency: frequency,
+                            isSelected: flareFrequency == frequency,
+                            onTap: {
+                                flareFrequency = frequency
                             }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemGray6))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(flareFrequency == frequency ? Color.blue : Color(.systemGray4), lineWidth: 1)
-                                )
                         )
                     }
                 }
+                .padding(.horizontal, 40)
             }
-            .padding(.horizontal, 40)
             
             Spacer()
         }
-        .padding(.top, 60)
+    }
+}
+
+// MARK: - Modern Frequency Card
+struct ModernFrequencyCard: View {
+    let frequency: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // Selection indicator
+                ZStack {
+                    Circle()
+                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Circle()
+                            .fill(Color.black)
+                            .frame(width: 12, height: 12)
+                    }
+                }
+                
+                Text(frequency)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.black)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(isSelected ? Color.black.opacity(0.05) : Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.black.opacity(0.2) : Color.black.opacity(0.1), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -643,166 +833,148 @@ struct TriggersView: View {
     let environmentTriggers = ["Work", "Travel", "Exercise", "School"]
     
     var body: some View {
-        VStack(spacing: 30) {
-            VStack(spacing: 20) {
-                Text("Triggers You Want to Track")
-                    .font(.system(size: 23, weight: .bold))
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
+        VStack(spacing: 0) {
+            Spacer()
+            
+            VStack(spacing: 50) {
+                // Header
+                VStack(spacing: 20) {
+                    Text("Track your triggers")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                    
+                    Text("Identify what affects your symptoms")
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+                
+                // Search field
+                HStack(spacing: 12) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 16, weight: .light))
+                        .foregroundColor(.secondary)
+                    
+                    TextField("Search triggers...", text: $searchText)
+                        .font(.system(size: 16, weight: .regular))
+                        .textFieldStyle(PlainTextFieldStyle())
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.black.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                        )
+                )
+                .padding(.horizontal, 40)
             }
             
-            // Search field
-            HStack {
-                Image(systemName: "plus")
-                    .font(.body)
-                    .foregroundColor(.primary)
+            Spacer()
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Diet Category
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Diet")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 40)
+                        
+                        VStack(spacing: 12) {
+                            ForEach(dietTriggers, id: \.self) { trigger in
+                                ModernTriggerCard(
+                                    trigger: trigger,
+                                    isSelected: selectedTriggers.contains(trigger),
+                                    onTap: {
+                                        if selectedTriggers.contains(trigger) {
+                                            selectedTriggers.remove(trigger)
+                                        } else {
+                                            selectedTriggers.insert(trigger)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 40)
+                    }
+                    
+                    // Environment Category
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Environment")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 40)
+                        
+                        VStack(spacing: 12) {
+                            ForEach(environmentTriggers, id: \.self) { trigger in
+                                ModernTriggerCard(
+                                    trigger: trigger,
+                                    isSelected: selectedTriggers.contains(trigger),
+                                    onTap: {
+                                        if selectedTriggers.contains(trigger) {
+                                            selectedTriggers.remove(trigger)
+                                        } else {
+                                            selectedTriggers.insert(trigger)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 40)
+                    }
+                }
+                .padding(.bottom, 40)
+            }
+        }
+    }
+}
+
+// MARK: - Modern Trigger Card
+struct ModernTriggerCard: View {
+    let trigger: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                // Selection indicator
+                ZStack {
+                    Circle()
+                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                        .frame(width: 20, height: 20)
+                    
+                    if isSelected {
+                        Circle()
+                            .fill(Color.black)
+                            .frame(width: 8, height: 8)
+                    }
+                }
                 
-                TextField("Triggers", text: $searchText)
-                    .font(.body)
-                    .textFieldStyle(PlainTextFieldStyle())
+                Text(trigger)
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.leading)
+                
+                Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.systemGray6))
+                    .fill(isSelected ? Color.black.opacity(0.05) : Color.clear)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color(.systemGray4), lineWidth: 1)
+                            .stroke(isSelected ? Color.black.opacity(0.2) : Color.black.opacity(0.1), lineWidth: 1)
                     )
             )
-            .padding(.horizontal, 40)
-            
-            // Top Suggestions
-            HStack {
-                Text("Top Suggestions")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                Text("\(selectedTriggers.count) selected")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.horizontal, 40)
-            
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Diet Category
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 8) {
-                            Circle()
-                                .fill(Color.green)
-                                .frame(width: 24, height: 24)
-                                .overlay(
-                                    Image(systemName: "applelogo")
-                                        .font(.caption)
-                                        .foregroundColor(.white)
-                                )
-                            
-                            Text("Diet")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                        }
-                        
-                        LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible())
-                        ], spacing: 8) {
-                            ForEach(dietTriggers, id: \.self) { trigger in
-                                Button(action: {
-                                    if selectedTriggers.contains(trigger) {
-                                        selectedTriggers.remove(trigger)
-                                    } else {
-                                        selectedTriggers.insert(trigger)
-                                    }
-                                }) {
-                                    HStack {
-                                        Text(trigger)
-                                            .font(.body)
-                                            .foregroundColor(selectedTriggers.contains(trigger) ? .blue : .primary)
-                                        
-                                        if selectedTriggers.contains(trigger) {
-                                            Image(systemName: "checkmark")
-                                                .font(.body)
-                                                .foregroundColor(.blue)
-                                        }
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color(.systemGray6))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .stroke(selectedTriggers.contains(trigger) ? Color.blue : Color(.systemGray4), lineWidth: 1)
-                                            )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    
-                    // Environment Category
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 8) {
-                            Circle()
-                                .fill(Color.blue)
-                                .frame(width: 24, height: 24)
-                                .overlay(
-                                    Image(systemName: "cloud.fill")
-                                        .font(.caption)
-                                        .foregroundColor(.white)
-                                )
-                            
-                            Text("Environment")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                        }
-                        
-                        LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible())
-                        ], spacing: 8) {
-                            ForEach(environmentTriggers, id: \.self) { trigger in
-                                Button(action: {
-                                    if selectedTriggers.contains(trigger) {
-                                        selectedTriggers.remove(trigger)
-                                    } else {
-                                        selectedTriggers.insert(trigger)
-                                    }
-                                }) {
-                                    HStack {
-                                        Text(trigger)
-                                            .font(.body)
-                                            .foregroundColor(selectedTriggers.contains(trigger) ? .blue : .primary)
-                                        
-                                        if selectedTriggers.contains(trigger) {
-                                            Image(systemName: "checkmark")
-                                                .font(.body)
-                                                .foregroundColor(.blue)
-                                        }
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color(.systemGray6))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .stroke(selectedTriggers.contains(trigger) ? Color.blue : Color(.systemGray4), lineWidth: 1)
-                                            )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 40)
-            }
         }
-        .padding(.top, 60)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -812,280 +984,560 @@ struct GoalsView: View {
     @Binding var showOnboarding: Bool
     
     let goals = [
-        ("Discover flare triggers", "magnifyingglass"),
         ("Reduce symptom severity", "chart.line.uptrend.xyaxis"),
-        ("Track treatments", "chart.bar.fill"),
-        ("Share data with doctors", "person.crop.circle.badge.checkmark")
+        ("Track treatments", "pills.fill"),
+        ("Share data with doctors", "person.crop.circle.badge.checkmark"),
+        ("Discover flare triggers", "magnifyingglass")
     ]
     
     var body: some View {
-        ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.blue.opacity(0.1),
-                    Color.purple.opacity(0.1),
-                    Color.pink.opacity(0.1)
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        VStack(spacing: 0) {
+            Spacer()
             
-            VStack(spacing: 40) {
+            VStack(spacing: 50) {
+                // Header
                 VStack(spacing: 20) {
-                    Text("What matters most to you?")
-                        .font(.system(size: 23, weight: .bold))
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
+                    Text("Your goals")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.black)
                         .multilineTextAlignment(.center)
                     
-                    Text("Select all that apply")
-                        .font(.body)
+                    Text("What matters most to you?")
+                        .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
                 }
                 
-                VStack(spacing: 16) {
+                // Goals List
+                VStack(spacing: 12) {
                     ForEach(goals, id: \.0) { goal in
-                        Button(action: {
-                            if selectedGoals.contains(goal.0) {
-                                selectedGoals.remove(goal.0)
-                            } else {
-                                selectedGoals.insert(goal.0)
-                            }
-                        }) {
-                            HStack(spacing: 16) {
-                                Image(systemName: goal.1)
-                                    .font(.title2)
-                                    .foregroundColor(selectedGoals.contains(goal.0) ? .blue : .primary)
-                                    .frame(width: 24, height: 24)
-                                
-                                Text(goal.0)
-                                    .font(.body)
-                                    .foregroundColor(selectedGoals.contains(goal.0) ? .blue : .primary)
-                                
-                                Spacer()
-                                
+                        ModernGoalCard(
+                            goal: goal.0,
+                            icon: goal.1,
+                            isSelected: selectedGoals.contains(goal.0),
+                            onTap: {
                                 if selectedGoals.contains(goal.0) {
-                                    Image(systemName: "checkmark")
-                                        .font(.body)
-                                        .foregroundColor(.blue)
+                                    selectedGoals.remove(goal.0)
+                                } else {
+                                    selectedGoals.insert(goal.0)
                                 }
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color(.systemGray6))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(selectedGoals.contains(goal.0) ? Color.blue : Color(.systemGray4), lineWidth: 1)
-                                    )
-                            )
-                        }
+                        )
                     }
                 }
                 .padding(.horizontal, 40)
-                
-                Spacer()
-                
-                // Complete setup button
-                Button("Complete Setup") {
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        showOnboarding = false
-                    }
-                }
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .padding(.horizontal, 40)
-                .padding(.vertical, 15)
-                .background(Color.black)
-                .cornerRadius(12)
-                .padding(.bottom, 30)
             }
-            .padding(.top, 60)
             
-        }
-    }
-}
-
-// MARK: - Profile Complete View
-struct ProfileCompleteView: View {
-    let userName: String
-    let selectedConditions: Set<String>
-    let selectedSymptoms: Set<String>
-    let severityLevel: Double
-    let flareFrequency: String
-    let selectedTriggers: Set<String>
-    let selectedGoals: Set<String>
-    @Binding var showOnboarding: Bool
-    @Binding var currentStep: Int
-    
-    var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 30) {
-                    // Header
-                    VStack(spacing: 16) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.green)
-                        
-                        Text("Profile Complete!")
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.primary)
-                        
-                        Text("Hello, \(userName)! Your symptom tracking profile is ready.")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.top, 40)
-                    
-                    // Summary Cards
-                    VStack(spacing: 20) {
-                        // Conditions Card
-                        if !selectedConditions.isEmpty {
-                            SummaryCard(
-                                title: "Conditions",
-                                icon: "heart.fill",
-                                items: Array(selectedConditions),
-                                color: .red
-                            )
-                        }
-                        
-                        // Symptoms Card
-                        if !selectedSymptoms.isEmpty {
-                            SummaryCard(
-                                title: "Symptoms",
-                                icon: "exclamationmark.triangle.fill",
-                                items: Array(selectedSymptoms),
-                                color: .orange
-                            )
-                        }
-                        
-                        // Severity Card
-                        SummaryCard(
-                            title: "Impact Level",
-                            icon: "gauge.high",
-                            items: ["\(Int(severityLevel))/10"],
-                            color: severityLevel <= 3 ? .green : severityLevel <= 6 ? .yellow : .red
-                        )
-                        
-                        // Frequency Card
-                        SummaryCard(
-                            title: "Flare Frequency",
-                            icon: "clock.fill",
-                            items: [flareFrequency],
-                            color: .blue
-                        )
-                        
-                        // Triggers Card
-                        if !selectedTriggers.isEmpty {
-                            SummaryCard(
-                                title: "Triggers to Track",
-                                icon: "eye.fill",
-                                items: Array(selectedTriggers),
-                                color: .purple
-                            )
-                        }
-                        
-                        // Goals Card
-                        if !selectedGoals.isEmpty {
-                            SummaryCard(
-                                title: "Your Goals",
-                                icon: "target",
-                                items: Array(selectedGoals),
-                                color: .indigo
-                            )
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    
-                    // Action Buttons
-                    VStack(spacing: 16) {
-                        Button("Start Tracking") {
-                            // Future: Navigate to main tracking interface
-                        }
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.blue)
-                        .cornerRadius(12)
-                        
-                        Button("Edit Profile") {
-                            showOnboarding = true
-                            currentStep = 0
-                        }
-                        .font(.title3)
-                        .fontWeight(.medium)
-                        .foregroundColor(.blue)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(12)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 40)
+            Spacer()
+            
+            // Complete setup button
+            Button("Complete Setup") {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    showOnboarding = false
                 }
             }
-            .navigationBarHidden(true)
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(.white)
+            .padding(.horizontal, 40)
+            .padding(.vertical, 16)
+            .background(Color.black)
+            .cornerRadius(12)
+            .padding(.bottom, 40)
         }
     }
 }
 
-// MARK: - Summary Card Component
-struct SummaryCard: View {
-    let title: String
+// MARK: - Modern Goal Card
+struct ModernGoalCard: View {
+    let goal: String
     let icon: String
-    let items: [String]
-    let color: Color
+    let isSelected: Bool
+    let onTap: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // Icon
                 Image(systemName: icon)
-                    .font(.title2)
-                    .foregroundColor(color)
+                    .font(.system(size: 20, weight: .light))
+                    .foregroundColor(.black)
+                    .frame(width: 24, height: 24)
                 
-                Text(title)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
+                Text(goal)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.leading)
                 
                 Spacer()
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(items, id: \.self) { item in
-                    HStack {
+                
+                // Selection indicator
+                ZStack {
+                    Circle()
+                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
                         Circle()
-                            .fill(color.opacity(0.3))
-                            .frame(width: 6, height: 6)
-                        
-                        Text(item)
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                        
-                        Spacer()
+                            .fill(Color.black)
+                            .frame(width: 12, height: 12)
                     }
                 }
             }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(isSelected ? Color.black.opacity(0.05) : Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.black.opacity(0.2) : Color.black.opacity(0.1), lineWidth: 1)
+                    )
+            )
         }
-        .padding(20)
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Daily Routines View
+struct DailyRoutinesView: View {
+    @Binding var selectedRoutines: Set<String>
+    
+    let routines = [
+        ("Sleep", "moon.fill"),
+        ("Exercise", "dumbbell.fill"),
+        ("Meals", "apple.logo"),
+        ("Stress", "bolt.fill")
+    ]
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer()
+            
+            VStack(spacing: 50) {
+                // Header
+                VStack(spacing: 20) {
+                    Text("Daily routines")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                    
+                    Text("Track your daily habits and activities")
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+                
+                // Routines List
+                VStack(spacing: 12) {
+                    ForEach(routines, id: \.0) { routine in
+                        ModernRoutineCard(
+                            routine: routine.0,
+                            icon: routine.1,
+                            isSelected: selectedRoutines.contains(routine.0),
+                            onTap: {
+                                if selectedRoutines.contains(routine.0) {
+                                    selectedRoutines.remove(routine.0)
+                                } else {
+                                    selectedRoutines.insert(routine.0)
+                                }
+                            }
+                        )
+                    }
+                }
+                .padding(.horizontal, 40)
+            }
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Modern Routine Card
+struct ModernRoutineCard: View {
+    let routine: String
+    let icon: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // Icon
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .light))
+                    .foregroundColor(.black)
+                    .frame(width: 24, height: 24)
+                
+                Text(routine)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.black)
+                
+                Spacer()
+                
+                // Selection indicator
+                ZStack {
+                    Circle()
+                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Circle()
+                            .fill(Color.black)
+                            .frame(width: 12, height: 12)
+                    }
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(isSelected ? Color.black.opacity(0.05) : Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.black.opacity(0.2) : Color.black.opacity(0.1), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Completion View
+struct CompletionView: View {
+    @Binding var showOnboarding: Bool
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer()
+            
+            VStack(spacing: 48) {
+                // Success Icon
+                ZStack {
+                    Circle()
+                        .fill(Color.black.opacity(0.05))
+                        .frame(width: 120, height: 120)
+                    
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 48, weight: .thin))
+                        .foregroundColor(.black)
+                }
+                
+                // Content
+                VStack(spacing: 16) {
+                    Text("You're all set!")
+                        .font(.system(size: 32, weight: .thin))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                    
+                    Text("Your personalized health tracking journey begins now")
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+            }
+            
+            Spacer()
+            
+            // Let's go button
+            Button("Let's go!") {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    showOnboarding = false
+                }
+            }
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(.white)
+            .padding(.horizontal, 40)
+            .padding(.vertical, 16)
+            .background(Color.black)
+            .cornerRadius(12)
+            .padding(.bottom, 40)
+        }
+        .padding(.horizontal, 40)
+    }
+}
+
+// MARK: - Home Screen View
+struct HomeScreenView: View {
+    var body: some View {
+        ZStack {
+            // Brighter light gray background
+            Color(red: 0.98, green: 0.98, blue: 0.98)
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 32) {
+                    // Header Section
+                    VStack(spacing: 24) {
+                        Text("Today, Sat Sep 20th")
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.top, 20)
+                        
+                        // Calendar Strip
+                        HStack(spacing: 16) {
+                            // Calendar icon
+                            Image(systemName: "calendar")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.black)
+                            
+                            HStack(spacing: 12) {
+                                ForEach(["M 15", "T 16", "W 17", "T 18", "F 19", "S 20", "S 21"], id: \.self) { day in
+                                    VStack(spacing: 6) {
+                                        Text(day)
+                                            .font(.system(size: 16, weight: .medium))
+                                            .foregroundColor(day == "S 20" ? .white : .black)
+                                            .frame(width: 44, height: 44)
+                                            .background(
+                                                Circle()
+                                                    .fill(day == "S 20" ? Color.black : Color.clear)
+                                            )
+                                        
+                                        if day == "S 20" {
+                                            Image(systemName: "checkmark")
+                                                .font(.system(size: 12, weight: .bold))
+                                                .foregroundColor(.green)
+                                        } else {
+                                            Spacer()
+                                                .frame(height: 12)
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                    
+                    // Quick Check-in Section
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Quick Check-in")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 20)
+                        
+                        // Scrollable container for Quick Check-in cards
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                QuickCheckInCard(
+                                    icon: "pills.fill",
+                                    title: "Medications",
+                                    color: Color.purple.opacity(0.2),
+                                    iconColor: .purple
+                                )
+                                
+                                QuickCheckInCard(
+                                    icon: "person.wave.2.fill",
+                                    title: "Symptoms",
+                                    color: Color.orange.opacity(0.2),
+                                    iconColor: .orange
+                                )
+                                
+                                QuickCheckInCard(
+                                    icon: "heart.fill",
+                                    title: "Measurement",
+                                    color: Color.pink.opacity(0.2),
+                                    iconColor: .pink
+                                )
+                                
+                                QuickCheckInCard(
+                                    icon: "fork.knife",
+                                    title: "Track Meals",
+                                    color: Color.green.opacity(0.2),
+                                    iconColor: .green
+                                )
+                                
+                                QuickCheckInCard(
+                                    icon: "bed.double.fill",
+                                    title: "Track Rest",
+                                    color: Color.blue.opacity(0.2),
+                                    iconColor: .blue
+                                )
+                                
+                                QuickCheckInCard(
+                                    icon: "brain.head.profile",
+                                    title: "Track Therapy",
+                                    color: Color.indigo.opacity(0.2),
+                                    iconColor: .indigo
+                                )
+                            }
+                            .padding(.horizontal, 20)
+                        }
+                    }
+                    
+                    // Reminders Section
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Reminders")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 20)
+                        
+                        VStack(spacing: 20) {
+                            // Morning Section
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "sun.max.fill")
+                                        .font(.system(size: 18))
+                                        .foregroundColor(.yellow)
+                                    
+                                    Text("Morning")
+                                        .font(.system(size: 18, weight: .medium))
+                                        .foregroundColor(.black)
+                                }
+                                .padding(.horizontal, 20)
+                                
+                                ReminderBoxCard(
+                                    icon: "pills.fill",
+                                    iconColor: .purple,
+                                    title: "Morning Medications",
+                                    subtitle: "Last recorded Sep 20, 12:32 PM",
+                                    isCompleted: true
+                                )
+                            }
+                            
+                            // Noon Section
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "sun.max.fill")
+                                        .font(.system(size: 18))
+                                        .foregroundColor(.yellow)
+                                    
+                                    Text("Noon")
+                                        .font(.system(size: 18, weight: .medium))
+                                        .foregroundColor(.black)
+                                }
+                                .padding(.horizontal, 20)
+                                
+                                ReminderBoxCard(
+                                    icon: "person.wave.2.fill",
+                                    iconColor: .orange,
+                                    title: "Midday Symptom Check",
+                                    subtitle: "Last recorded Sep 20, 12:32 PM",
+                                    isCompleted: true
+                                )
+                            }
+                            
+                            // Evening Section
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "moon.fill")
+                                        .font(.system(size: 18))
+                                        .foregroundColor(.purple)
+                                    
+                                    Text("Evening")
+                                        .font(.system(size: 18, weight: .medium))
+                                        .foregroundColor(.black)
+                                }
+                                .padding(.horizontal, 20)
+                                
+                                ReminderBoxCard(
+                                    icon: "pills.fill",
+                                    iconColor: .purple,
+                                    title: "Evening Medications",
+                                    subtitle: "Last recorded Sep 20, 12:32 PM",
+                                    isCompleted: true
+                                )
+                            }
+                        }
+                    }
+                }
+                .padding(.bottom, 40)
+            }
+        }
+    }
+}
+
+// MARK: - Quick Check-in Card
+struct QuickCheckInCard: View {
+    let icon: String
+    let title: String
+    let color: Color
+    let iconColor: Color
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 32))
+                .foregroundColor(iconColor)
+                .frame(width: 70, height: 70)
+                .background(color)
+                .cornerRadius(18)
+            
+            Text(title)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.black)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+        }
+        .frame(width: 100, height: 120)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 16)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemGray6))
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(color.opacity(0.2), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
                 )
         )
     }
 }
+
+// MARK: - Reminder Box Card
+struct ReminderBoxCard: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let subtitle: String
+    let isCompleted: Bool
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 24))
+                .foregroundColor(iconColor)
+                .frame(width: 28, height: 28)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(.black)
+                
+                Text(subtitle)
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+            
+            if isCompleted {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(width: 28, height: 28)
+                    .background(Color.blue)
+                    .cornerRadius(8)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.black.opacity(0.08), lineWidth: 1)
+                )
+        )
+        .padding(.horizontal, 20)
+    }
+}
+
 
 #Preview {
     ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
