@@ -49,7 +49,7 @@ struct ContentView: View {
             case .therapyTracking:
                 TherapyTrackingView(currentScreen: $currentScreen)
             case .symptomsTracking:
-                SymptomsTrackingView(currentScreen: $currentScreen)
+                SymptomsTrackingView(currentScreen: $currentScreen, selectedSymptoms: $selectedSymptoms, severityLevel: $severityLevel)
             }
         }
     }
@@ -78,92 +78,58 @@ struct OnboardingFlowView: View {
     @Binding var showOnboarding: Bool
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Modern Progress indicator
-            VStack(spacing: 12) {
-                HStack(spacing: 8) {
-                    ForEach(0..<10, id: \.self) { step in
-                        Circle()
-                            .fill(step <= currentStep ? Color.blue : Color.black.opacity(0.1))
-                            .frame(width: 8, height: 8)
-                            .scaleEffect(step == currentStep ? 1.2 : 1.0)
-                            .animation(.easeInOut(duration: 0.2), value: currentStep)
-                    }
-                }
-                
-                Text("Step \(currentStep + 1) of 10")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.secondary)
-            }
-            .padding(.top, 20)
-            .padding(.bottom, 10)
+        ZStack {
+            // Background
+            Color(.systemBackground)
+                .ignoresSafeArea()
             
-            // Current step content
-            ScrollView {
-                VStack(spacing: 0) {
-                    switch currentStep {
-                    case 0:
-                        WelcomeView()
-                    case 1:
-                        WhoAreYouView(userName: $userName)
-                    case 2:
-                        AddConditionsView(selectedConditions: $selectedConditions)
-                    case 3:
-                        AddSymptomsView(selectedSymptoms: $selectedSymptoms)
-                    case 4:
-                        FlareFrequencyView(flareFrequency: $flareFrequency)
-                    case 5:
-                        TriggersView(selectedTriggers: $selectedTriggers)
-                    case 6:
-                        DailyRoutinesView(selectedRoutines: $selectedRoutines)
-                    case 7:
-                        GoalsView(selectedGoals: $selectedGoals, showOnboarding: $showOnboarding)
-                    case 8:
-                        CompletionView(showOnboarding: $showOnboarding)
-                    default:
-                        WelcomeView()
+            VStack(spacing: 0) {
+                // Progress Bar
+                HStack(spacing: 4) {
+                    ForEach(0..<9, id: \.self) { step in
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(step <= currentStep ? Color.blue : Color.gray.opacity(0.2))
+                            .frame(height: 4)
+                            .animation(.easeInOut(duration: 0.3), value: currentStep)
                     }
                 }
-            }
-            
-            // Navigation buttons
-            HStack {
-                if currentStep > 0 {
-                    Button(action: {
-                        withAnimation {
-                            currentStep -= 1
-                        }
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                            .frame(width: 50, height: 50)
-                            .background(Color.blue.opacity(0.1))
-                            .clipShape(Circle())
-                    }
-                }
+                .padding(.horizontal, 24)
+                .padding(.top, 60)
+                .padding(.bottom, 40)
                 
-                Spacer()
-                
-                if currentStep < 8 {
-                    Button(action: {
-        withAnimation {
-                            currentStep += 1
-                        }
-                    }) {
-                        Image(systemName: "arrow.right")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                            .frame(width: 50, height: 50)
-                            .background(Color.blue.opacity(0.1))
-                            .clipShape(Circle())
-                    }
+                // Content
+                TabView(selection: $currentStep) {
+                    ModernWelcomeView(currentStep: $currentStep)
+                        .tag(0)
+                    
+                    ModernWhoAreYouView(currentStep: $currentStep, userName: $userName)
+                        .tag(1)
+                    
+                    ModernConditionsView(currentStep: $currentStep, selectedConditions: $selectedConditions)
+                        .tag(2)
+                    
+                    ModernSymptomsView(currentStep: $currentStep, selectedSymptoms: $selectedSymptoms, severityLevel: $severityLevel)
+                        .tag(3)
+                    
+                    ModernFlareFrequencyView(currentStep: $currentStep, flareFrequency: $flareFrequency)
+                        .tag(4)
+                    
+                    ModernTriggersView(currentStep: $currentStep, selectedTriggers: $selectedTriggers)
+                        .tag(5)
+                    
+                    ModernRoutinesView(currentStep: $currentStep, selectedRoutines: $selectedRoutines)
+                        .tag(6)
+                    
+                    ModernGoalsView(currentStep: $currentStep, selectedGoals: $selectedGoals)
+                        .tag(7)
+                    
+                    ModernCompletionView(currentStep: $currentStep, showOnboarding: $showOnboarding)
+                        .tag(8)
                 }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .animation(.easeInOut, value: currentStep)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 40)
         }
-        .background(Color.white)
     }
 }
 
@@ -1428,41 +1394,13 @@ struct HomeScreenView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Symptoms Scale")
+                                Text("Pattern Found")
                                     .font(.system(size: 14, weight: .semibold))
                                     .foregroundColor(.primary)
                                 
-                                VStack(alignment: .leading, spacing: 2) {
-                                    HStack {
-                                        Text("Fatigue")
-                                            .font(.system(size: 10, weight: .medium))
-                                            .foregroundColor(.secondary)
-                                        Spacer()
-                                        Text("7/10")
-                                            .font(.system(size: 10, weight: .bold))
-                                            .foregroundColor(.red)
-                                    }
-                                    
-                                    HStack {
-                                        Text("Pain")
-                                            .font(.system(size: 10, weight: .medium))
-                                            .foregroundColor(.secondary)
-                                        Spacer()
-                                        Text("5/10")
-                                            .font(.system(size: 10, weight: .bold))
-                                            .foregroundColor(.orange)
-                                    }
-                                    
-                                    HStack {
-                                        Text("Brain Fog")
-                                            .font(.system(size: 10, weight: .medium))
-                                            .foregroundColor(.secondary)
-                                        Spacer()
-                                        Text("3/10")
-                                            .font(.system(size: 10, weight: .bold))
-                                            .foregroundColor(.yellow)
-                                    }
-                                }
+                                Text("Fatigue +90min")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.secondary)
                             }
                         }
                         .padding(16)
@@ -2863,20 +2801,15 @@ struct TherapySessionView: View {
 // MARK: - Symptoms Tracking View
 struct SymptomsTrackingView: View {
     @Binding var currentScreen: AppScreen
-    @State private var selectedSymptoms: Set<String> = []
-    @State private var symptomSeverities: [String: Double] = [:]
+    @Binding var selectedSymptoms: Set<String>
+    @Binding var severityLevel: Double
+    @State private var currentSymptomSeverities: [String: Double] = [:]
     @State private var showingAddSymptom = false
-    @State private var searchText = ""
     
+    // Dummy data based on common symptoms from onboarding
     private let commonSymptoms = [
-        SymptomItem(name: "Fatigue", category: "General", icon: "😴", color: .orange),
-        SymptomItem(name: "Pain", category: "Physical", icon: "🤕", color: .red),
-        SymptomItem(name: "Brain Fog", category: "Cognitive", icon: "🧠", color: .purple),
-        SymptomItem(name: "Nausea", category: "Digestive", icon: "🤢", color: .green),
-        SymptomItem(name: "Headache", category: "Physical", icon: "🤯", color: .blue),
-        SymptomItem(name: "Dizziness", category: "Physical", icon: "🌀", color: .yellow),
-        SymptomItem(name: "Joint Pain", category: "Physical", icon: "🦴", color: .brown),
-        SymptomItem(name: "Muscle Weakness", category: "Physical", icon: "💪", color: .gray)
+        "Fatigue", "Pain", "Brain Fog", "Sleep Issues", "Mood Changes", 
+        "Digestive Issues", "Headaches", "Joint Stiffness", "Nausea", "Dizziness"
     ]
     
     var body: some View {
@@ -2913,28 +2846,44 @@ struct SymptomsTrackingView: View {
                     .padding(.top, 60)
                     .padding(.bottom, 20)
                     
-                    // Search Bar
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.gray)
-                        
-                        TextField("Search symptoms...", text: $searchText)
-                            .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.black)
+                    // Today's Symptoms Summary
+                    VStack(spacing: 20) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Today's Symptoms")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.gray)
+                                
+                                Text("\(selectedSymptoms.count) logged")
+                                    .font(.system(size: 28, weight: .bold))
+                                    .foregroundColor(.black)
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing, spacing: 4) {
+                                Text("Average Severity")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.gray)
+                                
+                                Text("\(String(format: "%.1f", averageSeverity))")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.red)
+                            }
+                        }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
+                    .padding(24)
                     .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.1))
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white)
+                            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
                     
-                    // Today's Symptoms
+                    // Current Symptoms
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Today's Symptoms")
+                        Text("Current Symptoms")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.black)
                             .padding(.horizontal, 24)
@@ -2949,7 +2898,7 @@ struct SymptomsTrackingView: View {
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.gray)
                                 
-                                Text("Add your symptoms to track them")
+                                Text("Add symptoms to track their severity")
                                     .font(.system(size: 14, weight: .regular))
                                     .foregroundColor(.gray)
                                     .multilineTextAlignment(.center)
@@ -2958,20 +2907,18 @@ struct SymptomsTrackingView: View {
                             .padding(.vertical, 40)
                         } else {
                             LazyVStack(spacing: 12) {
-                                ForEach(Array(selectedSymptoms), id: \.self) { symptomName in
-                                    if let symptom = commonSymptoms.first(where: { $0.name == symptomName }) {
-                                        SymptomTrackingRow(
-                                            symptom: symptom,
-                                            severity: Binding(
-                                                get: { symptomSeverities[symptomName] ?? 0 },
-                                                set: { symptomSeverities[symptomName] = $0 }
-                                            ),
-                                            onRemove: {
-                                                selectedSymptoms.remove(symptomName)
-                                                symptomSeverities.removeValue(forKey: symptomName)
-                                            }
-                                        )
-                                    }
+                                ForEach(Array(selectedSymptoms), id: \.self) { symptom in
+                                    SymptomTrackingRow(
+                                        symptom: symptom,
+                                        severity: Binding(
+                                            get: { currentSymptomSeverities[symptom] ?? 5.0 },
+                                            set: { currentSymptomSeverities[symptom] = $0 }
+                                        ),
+                                        onRemove: {
+                                            selectedSymptoms.remove(symptom)
+                                            currentSymptomSeverities.removeValue(forKey: symptom)
+                                        }
+                                    )
                                 }
                             }
                             .padding(.horizontal, 24)
@@ -2990,21 +2937,16 @@ struct SymptomsTrackingView: View {
                             GridItem(.flexible()),
                             GridItem(.flexible())
                         ], spacing: 12) {
-                            ForEach(commonSymptoms, id: \.name) { symptom in
-                                Button(action: {
-                                    if selectedSymptoms.contains(symptom.name) {
-                                        selectedSymptoms.remove(symptom.name)
-                                        symptomSeverities.removeValue(forKey: symptom.name)
-                                    } else {
-                                        selectedSymptoms.insert(symptom.name)
-                                        if symptomSeverities[symptom.name] == nil {
-                                            symptomSeverities[symptom.name] = 5
-                                        }
+                            ForEach(commonSymptoms, id: \.self) { symptom in
+                                if !selectedSymptoms.contains(symptom) {
+                                    Button(action: {
+                                        selectedSymptoms.insert(symptom)
+                                        currentSymptomSeverities[symptom] = 5.0
+                                    }) {
+                                        SymptomAddCard(symptom: symptom)
                                     }
-                                }) {
-                                    SymptomAddCard(symptom: symptom, isSelected: selectedSymptoms.contains(symptom.name))
+                                    .buttonStyle(PlainButtonStyle())
                                 }
-                                .buttonStyle(PlainButtonStyle())
                             }
                         }
                         .padding(.horizontal, 24)
@@ -3015,23 +2957,19 @@ struct SymptomsTrackingView: View {
         }
         .background(Color(red: 0.98, green: 0.98, blue: 0.98))
         .sheet(isPresented: $showingAddSymptom) {
-            AddSymptomView(symptoms: $selectedSymptoms, severities: $symptomSeverities)
+            AddSymptomView(symptoms: $selectedSymptoms, severities: $currentSymptomSeverities)
         }
     }
-}
-
-// MARK: - Symptom Item Model
-struct SymptomItem: Identifiable {
-    let id = UUID()
-    let name: String
-    let category: String
-    let icon: String
-    let color: Color
+    
+    private var averageSeverity: Double {
+        let severities = currentSymptomSeverities.values
+        return severities.isEmpty ? 0.0 : severities.reduce(0, +) / Double(severities.count)
+    }
 }
 
 // MARK: - Symptom Tracking Row
 struct SymptomTrackingRow: View {
-    let symptom: SymptomItem
+    let symptom: String
     @Binding var severity: Double
     let onRemove: () -> Void
     
@@ -3041,20 +2979,21 @@ struct SymptomTrackingRow: View {
                 // Symptom Icon
                 ZStack {
                     Circle()
-                        .fill(symptom.color.opacity(0.2))
+                        .fill(Color.red.opacity(0.2))
                         .frame(width: 50, height: 50)
                     
-                    Text(symptom.icon)
+                    Image(systemName: "heart.fill")
                         .font(.system(size: 24))
+                        .foregroundColor(.red)
                 }
                 
                 // Symptom Info
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(symptom.name)
+                    Text(symptom)
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.black)
                     
-                    Text(symptom.category)
+                    Text("Severity: \(String(format: "%.1f", severity))/10")
                         .font(.system(size: 14, weight: .regular))
                         .foregroundColor(.gray)
                 }
@@ -3071,85 +3010,56 @@ struct SymptomTrackingRow: View {
             }
             
             // Severity Slider
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(spacing: 8) {
                 HStack {
-                    Text("Severity")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black)
+                    Text("Mild")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.green)
                     
                     Spacer()
                     
-                    Text("\(Int(severity))/10")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(severityColor)
+                    Text("Severe")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.red)
                 }
                 
-                Slider(value: $severity, in: 0...10, step: 1)
-                    .accentColor(severityColor)
+                Slider(value: $severity, in: 1...10, step: 0.5)
+                    .accentColor(.red)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
+        .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color.white)
                 .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
         )
     }
-    
-    private var severityColor: Color {
-        switch severity {
-        case 0...2: return .green
-        case 3...4: return .yellow
-        case 5...6: return .orange
-        case 7...8: return .red
-        default: return .purple
-        }
-    }
 }
 
 // MARK: - Symptom Add Card
 struct SymptomAddCard: View {
-    let symptom: SymptomItem
-    let isSelected: Bool
+    let symptom: String
     
     var body: some View {
-        VStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(symptom.color.opacity(isSelected ? 0.3 : 0.2))
-                    .frame(width: 40, height: 40)
-                
-                Text(symptom.icon)
-                    .font(.system(size: 20))
-            }
+        HStack {
+            Text(symptom)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.black)
             
-            VStack(spacing: 4) {
-                Text(symptom.name)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
-                
-                Text(symptom.category)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.gray)
-            }
+            Spacer()
             
-            if isSelected {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 16))
-                    .foregroundColor(.green)
-            }
+            Image(systemName: "plus")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(.white)
+                .frame(width: 24, height: 24)
+                .background(Color.red)
+                .clipShape(Circle())
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(isSelected ? symptom.color.opacity(0.1) : Color.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(isSelected ? symptom.color : Color.clear, lineWidth: 2)
-                )
+                .fill(Color.white)
                 .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
         )
     }
@@ -3161,10 +3071,7 @@ struct AddSymptomView: View {
     @Binding var severities: [String: Double]
     @Environment(\.presentationMode) var presentationMode
     @State private var symptomName = ""
-    @State private var category = "General"
-    @State private var severity = 5.0
-    
-    private let categories = ["General", "Physical", "Cognitive", "Digestive", "Emotional", "Sleep"]
+    @State private var initialSeverity = 5.0
     
     var body: some View {
         NavigationView {
@@ -3179,46 +3086,39 @@ struct AddSymptomView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Category")
+                    Text("Initial Severity")
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.black)
                     
-                    Picker("Category", selection: $category) {
-                        ForEach(categories, id: \.self) { cat in
-                            Text(cat).tag(cat)
+                    VStack(spacing: 8) {
+                        HStack {
+                            Text("Mild")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.green)
+                            
+                            Spacer()
+                            
+                            Text("\(String(format: "%.1f", initialSeverity))/10")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.red)
+                            
+                            Spacer()
+                            
+                            Text("Severe")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.red)
                         }
-                    }
-                    .pickerStyle(MenuPickerStyle())
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                    )
-                }
-                
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Text("Initial Severity")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.black)
                         
-                        Spacer()
-                        
-                        Text("\(Int(severity))/10")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.red)
+                        Slider(value: $initialSeverity, in: 1...10, step: 0.5)
+                            .accentColor(.red)
                     }
-                    
-                    Slider(value: $severity, in: 0...10, step: 1)
-                        .accentColor(.red)
                 }
                 
                 Spacer()
                 
                 Button(action: {
                     symptoms.insert(symptomName)
-                    severities[symptomName] = severity
+                    severities[symptomName] = initialSeverity
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Add Symptom")
