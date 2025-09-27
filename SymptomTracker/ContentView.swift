@@ -78,281 +78,1440 @@ struct OnboardingFlowView: View {
     @Binding var showOnboarding: Bool
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Modern Progress indicator
-            VStack(spacing: 12) {
-                HStack(spacing: 8) {
-                    ForEach(0..<10, id: \.self) { step in
-                        Circle()
-                            .fill(step <= currentStep ? Color.blue : Color.black.opacity(0.1))
-                            .frame(width: 8, height: 8)
-                            .scaleEffect(step == currentStep ? 1.2 : 1.0)
-                            .animation(.easeInOut(duration: 0.2), value: currentStep)
-                    }
-                }
+        GeometryReader { geometry in
+            ZStack {
+                // Background
+                Color(red: 0.98, green: 0.98, blue: 0.98)
+                    .ignoresSafeArea()
                 
-                Text("Step \(currentStep + 1) of 10")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.secondary)
-            }
-            .padding(.top, 20)
-            .padding(.bottom, 10)
+        VStack(spacing: 0) {
+                    // Progress indicator
+                    VStack(spacing: 16) {
+                HStack(spacing: 8) {
+                            ForEach(0..<9, id: \.self) { step in
+                        Circle()
+                                    .fill(step <= currentStep ? Color.blue : Color.gray.opacity(0.3))
+                                    .frame(width: 10, height: 10)
+                            .scaleEffect(step == currentStep ? 1.2 : 1.0)
+                                    .animation(.easeInOut(duration: 0.3), value: currentStep)
+                            }
+                        }
+                        
+                        Text("Step \(currentStep + 1) of 9")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.top, 60)
+                    .padding(.bottom, 20)
             
             // Current step content
             ScrollView {
                 VStack(spacing: 0) {
                     switch currentStep {
                     case 0:
-                        WelcomeView()
+                                NewWelcomeView()
                     case 1:
-                        WhoAreYouView(userName: $userName)
+                                NewProfileSetupView(userName: $userName)
                     case 2:
-                        AddConditionsView(selectedConditions: $selectedConditions)
+                                NewConditionsView(selectedConditions: $selectedConditions)
                     case 3:
-                        AddSymptomsView(selectedSymptoms: $selectedSymptoms)
+                                NewSymptomsView(selectedSymptoms: $selectedSymptoms, severityLevel: $severityLevel)
                     case 4:
-                        FlareFrequencyView(flareFrequency: $flareFrequency)
+                                FlarePatternView(flareFrequency: $flareFrequency)
                     case 5:
-                        TriggersView(selectedTriggers: $selectedTriggers)
+                                TreatmentsView()
                     case 6:
-                        DailyRoutinesView(selectedRoutines: $selectedRoutines)
+                                TriggersView(selectedTriggers: $selectedTriggers, selectedRoutines: $selectedRoutines)
                     case 7:
                         GoalsView(selectedGoals: $selectedGoals, showOnboarding: $showOnboarding)
                     case 8:
-                        CompletionView(showOnboarding: $showOnboarding)
+                                OnboardingSummaryView(
+                                    userName: $userName,
+                                    selectedConditions: $selectedConditions,
+                                    selectedSymptoms: $selectedSymptoms,
+                                    severityLevel: $severityLevel,
+                                    flareFrequency: $flareFrequency,
+                                    selectedTriggers: $selectedTriggers,
+                                    selectedRoutines: $selectedRoutines,
+                                    selectedGoals: $selectedGoals,
+                                    showOnboarding: $showOnboarding
+                                )
                     default:
-                        WelcomeView()
+                                NewWelcomeView()
                     }
                 }
             }
             
             // Navigation buttons
-            HStack {
+                    HStack(spacing: 16) {
                 if currentStep > 0 {
                     Button(action: {
-                        withAnimation {
+                                withAnimation(.easeInOut(duration: 0.3)) {
                             currentStep -= 1
                         }
                     }) {
                         Image(systemName: "arrow.left")
-                            .font(.title2)
+                                    .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.blue)
-                            .frame(width: 50, height: 50)
-                            .background(Color.blue.opacity(0.1))
-                            .clipShape(Circle())
+                                    .padding(.horizontal, 24)
+                                    .padding(.vertical, 12)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color.blue.opacity(0.1))
+                                    )
                     }
                 }
                 
                 Spacer()
                 
-                if currentStep < 8 {
                     Button(action: {
-        withAnimation {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                if currentStep < 8 {
                             currentStep += 1
+                                } else {
+                                    // Complete onboarding
+                                    showOnboarding = false
+                                }
                         }
                     }) {
+                            HStack(spacing: 8) {
+                                if currentStep == 8 {
+                                    Text("Get Started")
+                                        .font(.system(size: 16, weight: .semibold))
+                                } else {
                         Image(systemName: "arrow.right")
-                            .font(.title2)
+                                        .font(.system(size: 16, weight: .medium))
+                                }
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.blue)
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 24)
+            .padding(.bottom, 40)
+        }
+            }
+        }
+    }
+}
+
+// MARK: - New Welcome View
+struct NewWelcomeView: View {
+    var body: some View {
+        VStack(spacing: 32) {
+            Spacer()
+            
+            // Main welcome content
+            VStack(spacing: 24) {
+                // Title and description
+                VStack(spacing: 16) {
+                    Text("Welcome to")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.gray)
+                    
+                    Text("SymptomTracker")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.black)
+                    
+                    Text("AI-powered chronic illness tracking and health insights")
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+            }
+                    
+                            Spacer()
+                            
+            // Features preview
+            VStack(spacing: 16) {
+                Text("What you'll get")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                VStack(spacing: 12) {
+                    FeaturePreviewRow(
+                        icon: "brain.head.profile",
+                        title: "AI-Powered Flare Tracking",
+                        description: "Intelligent pattern recognition for your symptoms",
+                        color: .purple
+                    )
+                    
+                    FeaturePreviewRow(
+                        icon: "heart.text.square.fill",
+                        title: "Track All Aspects",
+                        description: "Monitor every aspect of your chronic illness",
+                        color: .red
+                    )
+                    
+                    FeaturePreviewRow(
+                        icon: "chart.line.uptrend.xyaxis",
+                        title: "Health Insights",
+                        description: "Personalized recommendations and predictions",
+                        color: .blue
+                    )
+                }
+            }
+            .padding(.horizontal, 24)
+                                
+                                Spacer()
+        }
+    }
+}
+
+// MARK: - Feature Preview Row
+struct FeaturePreviewRow: View {
+    let icon: String
+    let title: String
+    let description: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 16) {
+        ZStack {
+                Circle()
+                    .fill(color.opacity(0.1))
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(color)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                Text(description)
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+        )
+    }
+}
+
+// MARK: - New Profile Setup View
+struct NewProfileSetupView: View {
+    @Binding var userName: String
+    @FocusState private var isTextFieldFocused: Bool
+    
+    var body: some View {
+        VStack(spacing: 32) {
+            // Header
+            VStack(spacing: 16) {
+                Text("What's your name?")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.black)
+                
+                Text("We'll personalize your experience")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.gray)
+            }
+            .padding(.horizontal, 24)
+            
+            // Name input
+            TextField("Enter your name", text: $userName)
+                .font(.system(size: 18, weight: .regular))
+                .focused($isTextFieldFocused)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(isTextFieldFocused ? Color.blue : Color.clear, lineWidth: 2)
+                        )
+                )
+                .padding(.horizontal, 24)
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Benefit Row
+struct BenefitRow: View {
+    let icon: String
+    let title: String
+    let description: String
+    
+    var body: some View {
+        HStack(spacing: 12) {
+                                            ZStack {
+                Circle()
+                    .fill(Color.blue.opacity(0.1))
+                    .frame(width: 32, height: 32)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.blue)
-                            .frame(width: 50, height: 50)
-                            .background(Color.blue.opacity(0.1))
-                            .clipShape(Circle())
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                Text(description)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.gray)
+            }
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - New Conditions View
+struct NewConditionsView: View {
+    @Binding var selectedConditions: Set<String>
+    
+    let conditions = [
+        ("Functional neurological disorder", "brain.head.profile"),
+        ("Autonomic dysfunction", "heart.fill"),
+        ("Chronic Pain", "bandage.fill"),
+        ("Fibromyalgia", "figure.walk"),
+        ("Arthritis", "figure.arms.open"),
+        ("Migraine", "bolt.fill")
+    ]
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 16) {
+                Text("Your Chronic Illness")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.black)
+                
+                Text("Select any conditions you're managing")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+            }
+            .padding(.horizontal, 24)
+            
+            // Conditions grid
+            VStack(spacing: 12) {
+                ForEach(conditions, id: \.0) { condition in
+                    ConditionCard(
+                        condition: condition.0,
+                        icon: condition.1,
+                        isSelected: selectedConditions.contains(condition.0),
+                        onTap: {
+                            if selectedConditions.contains(condition.0) {
+                                selectedConditions.remove(condition.0)
+                            } else {
+                                selectedConditions.insert(condition.0)
+                            }
+                        }
+                    )
+                }
+                
+                // Add custom condition
+                Button(action: {
+                    // Add custom condition functionality
+                }) {
+                    HStack(spacing: 16) {
+                    ZStack {
+                                                        Circle()
+                                .fill(Color.blue.opacity(0.1))
+                                .frame(width: 44, height: 44)
+                            
+                            Image(systemName: "plus")
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.blue)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Add another condition")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.black)
+                            
+                            Text("Tap to add a custom condition")
+                                .font(.system(size: 14, weight: .regular))
+                                .foregroundColor(.gray)
+                        }
+                        
+                            Spacer()
+                            
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.gray)
+            }
+            .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white)
+                            .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+            .padding(.horizontal, 24)
+                                        
+                                        Spacer()
+        }
+    }
+}
+
+// MARK: - Condition Card
+struct ConditionCard: View {
+    let condition: String
+    let icon: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+        ZStack {
+                                            Circle()
+                        .fill(isSelected ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? .blue : .gray)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(condition)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.leading)
+                    
+                    Text("Health condition")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(.gray)
+                                }
+                                
+                                Spacer()
+                                
+                ZStack {
+                    Circle()
+                        .stroke(isSelected ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.blue)
                     }
                 }
             }
             .padding(.horizontal, 20)
-            .padding(.bottom, 40)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+                    )
+            )
         }
-        .background(Color.white)
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - New Symptoms View
+struct NewSymptomsView: View {
+    @Binding var selectedSymptoms: Set<String>
+    @Binding var severityLevel: Double
+    @State private var symptomSeverities: [String: Double] = [:]
+    
+    let symptoms = [
+        ("Fatigue", "zzz", Color.orange),
+        ("Pain", "bandage.fill", Color.red),
+        ("Brain Fog", "brain.head.profile", Color.purple),
+        ("Nausea", "stomach.fill", Color.green),
+        ("Headache", "bolt.fill", Color.yellow),
+        ("Dizziness", "arrow.triangle.2.circlepath", Color.blue),
+        ("Anxiety", "heart.fill", Color.pink),
+        ("Sleep Issues", "moon.fill", Color.indigo)
+    ]
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 16) {
+                Text("Track Your Symptoms")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.black)
+                
+                Text("Select symptoms you experience regularly")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+            }
+            .padding(.horizontal, 24)
+            
+            // Symptoms with individual scales
+            VStack(spacing: 16) {
+                ForEach(symptoms, id: \.0) { symptom in
+                    SymptomCardWithScale(
+                        symptom: symptom.0,
+                        icon: symptom.1,
+                        color: symptom.2,
+                        isSelected: selectedSymptoms.contains(symptom.0),
+                        severity: symptomSeverities[symptom.0] ?? 5.0,
+                        onTap: {
+                            if selectedSymptoms.contains(symptom.0) {
+                                selectedSymptoms.remove(symptom.0)
+                                symptomSeverities.removeValue(forKey: symptom.0)
+                            } else {
+                                selectedSymptoms.insert(symptom.0)
+                                symptomSeverities[symptom.0] = 5.0
+                            }
+                        },
+                        onSeverityChange: { newValue in
+                            symptomSeverities[symptom.0] = newValue
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, 24)
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Symptom Card
+struct SymptomCard: View {
+    let symptom: String
+    let icon: String
+    let color: Color
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                    ZStack {
+                    Circle()
+                        .fill(isSelected ? color.opacity(0.2) : color.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? color : color.opacity(0.7))
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(symptom)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                    
+                    Text("Symptom")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(.gray)
+                }
+                
+                            Spacer()
+                            
+                ZStack {
+                                        Circle()
+                        .stroke(isSelected ? color : Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(color)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? color : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Symptom Card With Scale
+struct SymptomCardWithScale: View {
+    let symptom: String
+    let icon: String
+    let color: Color
+    let isSelected: Bool
+    let severity: Double
+    let onTap: () -> Void
+    let onSeverityChange: (Double) -> Void
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            // Main symptom card
+            Button(action: onTap) {
+                HStack(spacing: 16) {
+                    ZStack {
+                        Circle()
+                            .fill(isSelected ? color.opacity(0.2) : color.opacity(0.1))
+                            .frame(width: 44, height: 44)
+                        
+                        Image(systemName: icon)
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(isSelected ? color : color.opacity(0.7))
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(symptom)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.black)
+                        
+                        Text("Symptom")
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Spacer()
+                    
+                    ZStack {
+                        Circle()
+                            .stroke(isSelected ? color : Color.gray.opacity(0.3), lineWidth: 2)
+                            .frame(width: 24, height: 24)
+                        
+                        if isSelected {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(color)
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white)
+                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(isSelected ? color : Color.clear, lineWidth: 2)
+                        )
+                )
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            // Individual severity scale (only show if selected)
+            if isSelected {
+                VStack(spacing: 8) {
+                            HStack {
+                        Text("Severity")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.black)
+                        Spacer()
+                        Text("\(Int(severity))/10")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(color)
+                    }
+                    
+                    Slider(value: Binding(
+                        get: { severity },
+                        set: { onSeverityChange($0) }
+                    ), in: 1...10, step: 1)
+                        .accentColor(color)
+                    
+                    HStack {
+                        Text("Mild")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text("Severe")
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(.gray)
+                    }
+                }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(color.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(color.opacity(0.2), lineWidth: 1)
+                        )
+                )
+            }
+        }
+    }
+}
+
+// MARK: - Flare Pattern View
+struct FlarePatternView: View {
+    @Binding var flareFrequency: String
+    
+    let patterns = [
+        ("Episodic", "waveform.path.ecg", "Symptoms flare up periodically"),
+        ("Constant", "line.horizontal.3", "Symptoms are always present"),
+        ("Variable", "arrow.up.arrow.down", "Symptoms change unpredictably")
+    ]
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 16) {
+                Text("Flare Patterns")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.black)
+                
+                Text("How do your symptoms typically behave?")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+            .padding(.horizontal, 24)
+            
+            // Pattern options
+            VStack(spacing: 12) {
+                ForEach(patterns, id: \.0) { pattern in
+                    FlarePatternCard(
+                        title: pattern.0,
+                        icon: pattern.1,
+                        description: pattern.2,
+                        isSelected: flareFrequency == pattern.0,
+                        onTap: {
+                            flareFrequency = pattern.0
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, 24)
+                                
+                                Spacer()
+        }
+    }
+}
+
+// MARK: - Flare Pattern Card
+struct FlarePatternCard: View {
+    let title: String
+    let icon: String
+    let description: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                                    ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? .blue : .gray)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                    
+                    Text(description)
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                ZStack {
+                                        Circle()
+                        .stroke(isSelected ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Treatments View
+struct TreatmentsView: View {
+    @State private var selectedTreatments: Set<String> = []
+    
+    let treatments = [
+        ("Medications", "pills.fill"),
+        ("Supplements", "leaf.fill"),
+        ("Diet Restrictions", "fork.knife"),
+        ("Physical Therapy", "figure.walk"),
+        ("Mental Health Therapy", "brain.head.profile"),
+        ("Alternative Medicine", "leaf.circle.fill")
+    ]
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 16) {
+                Text("Current Treatments")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.black)
+                
+                Text("What treatments or supports are you currently using?")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+            .padding(.horizontal, 24)
+            
+            // Treatment options
+            VStack(spacing: 12) {
+                ForEach(treatments, id: \.0) { treatment in
+                    TreatmentCard(
+                        treatment: treatment.0,
+                        icon: treatment.1,
+                        isSelected: selectedTreatments.contains(treatment.0),
+                        onTap: {
+                            if selectedTreatments.contains(treatment.0) {
+                                selectedTreatments.remove(treatment.0)
+                            } else {
+                                selectedTreatments.insert(treatment.0)
+                            }
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, 24)
+                                        
+                                        Spacer()
+        }
+    }
+}
+
+// MARK: - Treatment Card
+struct TreatmentCard: View {
+    let treatment: String
+    let icon: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                                            ZStack {
+                                            Circle()
+                        .fill(isSelected ? Color.green.opacity(0.2) : Color.gray.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? .green : .gray)
+                }
+                
+                Text(treatment)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                Spacer()
+                
+                ZStack {
+                                                        Circle()
+                        .stroke(isSelected ? Color.green : Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.green)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.green : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Triggers View
+struct TriggersView: View {
+    @Binding var selectedTriggers: Set<String>
+    @Binding var selectedRoutines: Set<String>
+    
+    let triggers = [
+        ("Diet", "fork.knife", Color.orange),
+        ("Stress", "exclamationmark.triangle.fill", Color.red),
+        ("Sleep", "moon.fill", Color.indigo),
+        ("Movement", "figure.walk", Color.blue),
+        ("Hormones", "waveform.path.ecg", Color.pink),
+        ("Environment", "cloud.sun.fill", Color.yellow)
+    ]
+    
+    let routines = [
+        ("Sleep", "moon.fill"),
+        ("Exercise", "figure.walk"),
+        ("Meals", "fork.knife"),
+        ("Stress", "exclamationmark.triangle.fill"),
+        ("All of the above", "checkmark.circle.fill")
+    ]
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 16) {
+                Text("Triggers & Routines")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.black)
+                
+                Text("What would you like to track for insights?")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+            .padding(.horizontal, 24)
+            
+            // Triggers section
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Triggers to Track")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                VStack(spacing: 12) {
+                    ForEach(triggers, id: \.0) { trigger in
+                        TriggerCardFullWidth(
+                            trigger: trigger.0,
+                            icon: trigger.1,
+                            color: trigger.2,
+                            isSelected: selectedTriggers.contains(trigger.0),
+                            onTap: {
+                                if selectedTriggers.contains(trigger.0) {
+                                    selectedTriggers.remove(trigger.0)
+                                } else {
+                                    selectedTriggers.insert(trigger.0)
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+            .padding(.horizontal, 24)
+            
+            // Routines section
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Things You Want to Track")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                VStack(spacing: 12) {
+                    ForEach(routines, id: \.0) { routine in
+                        RoutineCard(
+                            routine: routine.0,
+                            icon: routine.1,
+                            isSelected: selectedRoutines.contains(routine.0),
+                            onTap: {
+                                if selectedRoutines.contains(routine.0) {
+                                    selectedRoutines.remove(routine.0)
+                                } else {
+                                    selectedRoutines.insert(routine.0)
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+            .padding(.horizontal, 24)
+                                        
+                                        Spacer()
+        }
+    }
+}
+
+// MARK: - Trigger Card
+struct TriggerCard: View {
+    let trigger: String
+    let icon: String
+    let color: Color
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 8) {
+                ZStack {
+                                            Circle()
+                        .fill(isSelected ? color.opacity(0.2) : color.opacity(0.1))
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(isSelected ? color : color.opacity(0.7))
+                }
+                
+                Text(trigger)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.center)
+                
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(color)
+                }
+            }
+            .padding(12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+                                            .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(isSelected ? color : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Trigger Card Full Width
+struct TriggerCardFullWidth: View {
+    let trigger: String
+    let icon: String
+    let color: Color
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? color.opacity(0.2) : color.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? color : color.opacity(0.7))
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(trigger)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                    
+                    Text("Trigger")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(.gray)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                ZStack {
+                                        Circle()
+                        .stroke(isSelected ? color : Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(color)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                                            .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                            .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? color : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Routine Card
+struct RoutineCard: View {
+    let routine: String
+    let icon: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                ZStack {
+                                                Circle()
+                        .fill(isSelected ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? .blue : .gray)
+                }
+                
+                Text(routine)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                Spacer()
+                
+                ZStack {
+                    Circle()
+                        .stroke(isSelected ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Goals View
+struct GoalsView: View {
+    @Binding var selectedGoals: Set<String>
+    @Binding var showOnboarding: Bool
+    
+    let goals = [
+        ("Discover flare triggers", "magnifyingglass.circle.fill"),
+        ("Reduce symptom severity", "arrow.down.circle.fill"),
+        ("Track treatment effectiveness", "chart.line.uptrend.xyaxis"),
+        ("Share data with doctors", "square.and.arrow.up.fill")
+    ]
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 16) {
+                Text("Your Goals")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.black)
+                
+                Text("What do you want most from this app?")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+            .padding(.horizontal, 24)
+            
+            // Goals options
+            VStack(spacing: 12) {
+                ForEach(goals, id: \.0) { goal in
+                    GoalCard(
+                        goal: goal.0,
+                        icon: goal.1,
+                        isSelected: selectedGoals.contains(goal.0),
+                        onTap: {
+                            if selectedGoals.contains(goal.0) {
+                                selectedGoals.remove(goal.0)
+                            } else {
+                                selectedGoals.insert(goal.0)
+                            }
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, 24)
+            
+            Spacer()
+        }
+        .onAppear {
+            // Set default completion action when this view appears
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                // This will be handled by the parent view's navigation button
+            }
+        }
+    }
+}
+
+// MARK: - Goal Card
+struct GoalCard: View {
+    let goal: String
+    let icon: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.purple.opacity(0.2) : Color.gray.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? .purple : .gray)
+                }
+                
+                Text(goal)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                Spacer()
+                
+                ZStack {
+                    Circle()
+                        .stroke(isSelected ? Color.purple : Color.gray.opacity(0.3), lineWidth: 2)
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.purple)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isSelected ? Color.purple : Color.clear, lineWidth: 2)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - New Completion View
+struct NewCompletionView: View {
+    @Binding var showOnboarding: Bool
+    
+    var body: some View {
+        VStack(spacing: 32) {
+            Spacer()
+            
+            // Success animation
+            VStack(spacing: 24) {
+                ZStack {
+                                                Circle()
+                        .fill(LinearGradient(
+                            gradient: Gradient(colors: [Color.green.opacity(0.8), Color.blue.opacity(0.8)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ))
+                        .frame(width: 120, height: 120)
+                    
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundColor(.white)
+                }
+                
+                VStack(spacing: 16) {
+                    Text("You're All Set!")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.black)
+                    
+                    Text("Your personalized health tracking experience is ready")
+                        .font(.system(size: 16, weight: .regular))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+            }
+            
+            Spacer()
+            
+            // What's next
+            VStack(spacing: 20) {
+                Text("What's Next?")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                VStack(spacing: 16) {
+                    NextStepRow(
+                        icon: "heart.fill",
+                        title: "Start Tracking",
+                        description: "Begin logging your daily symptoms",
+                        color: .red
+                    )
+                    
+                    NextStepRow(
+                        icon: "bell.fill",
+                        title: "Set Reminders",
+                        description: "Never miss medication or check-ins",
+                        color: .blue
+                    )
+                    
+                    NextStepRow(
+                        icon: "chart.line.uptrend.xyaxis",
+                        title: "View Insights",
+                        description: "See patterns in your health data",
+                        color: .green
+                    )
+                }
+            }
+            .padding(24)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+            )
+            .padding(.horizontal, 24)
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Next Step Row
+struct NextStepRow: View {
+    let icon: String
+    let title: String
+    let description: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.1))
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(color)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                Text(description)
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(.gray)
+                }
+                
+                Spacer()
+        }
     }
 }
 
 // MARK: - Welcome View
 struct WelcomeView: View {
     var body: some View {
-        ZStack {
-            // Background
-            Color.white
-                .ignoresSafeArea()
-            
+        GeometryReader { geometry in
+            ScrollView {
             VStack(spacing: 0) {
-                // Illustration Section
-                VStack(spacing: 0) {
-                    // Ground line
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 2)
-                        .padding(.horizontal, 40)
-                    
-                    // Illustration
-                    ZStack {
-                        // Background elements
-                        VStack {
-                            Spacer()
-                            
+                    // Header with Profile
                             HStack {
-                                // Plant on the left
-                                VStack(spacing: 0) {
-                                    // Plant pot
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color.black)
-                                        .frame(width: 30, height: 20)
-                                    
-                                    // Plant leaves
-                                    VStack(spacing: -5) {
-                                        ForEach(0..<3, id: \.self) { _ in
-                                            Ellipse()
-                                                .fill(Color.green)
-                                                .frame(width: 25, height: 15)
-                                        }
-                                    }
-                                }
-                                .padding(.leading, 40)
-                                
                                 Spacer()
                                 
-                                // Woman character
-                                VStack(spacing: 0) {
-                                    // Head with hair and headband
-                                    ZStack {
-                                        // Hair
-                                        Ellipse()
-                                            .fill(Color.black)
-                                            .frame(width: 50, height: 45)
-                                        
-                                        // Headband
-                                        Rectangle()
-                                            .fill(Color.purple)
-                                            .frame(width: 60, height: 8)
-                                            .offset(y: -15)
-                                        
-                                        // Face
+                        // Profile Avatar
                                         Circle()
-                                            .fill(Color.orange.opacity(0.8))
-                                            .frame(width: 40, height: 40)
-                                        
-                                        // Smile
-                                        Path { path in
-                                            path.addArc(center: CGPoint(x: 0, y: 5), radius: 8, startAngle: .degrees(0), endAngle: .degrees(180), clockwise: false)
-                                        }
-                                        .stroke(Color.black, lineWidth: 2)
-                                        .frame(width: 16, height: 8)
-                                    }
-                                    
-                                    // Body
-                                    VStack(spacing: 0) {
-                                        // Top (yellow)
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color.yellow)
-                                            .frame(width: 45, height: 30)
-                                        
-                                        // Pants (purple)
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .fill(Color.purple)
-                                            .frame(width: 40, height: 25)
-                                    }
-                                    
-                                    // Arms and donuts
-                                    HStack(spacing: 0) {
-                                        // Left arm with tray
-                                        VStack {
-                                            Rectangle()
-                                                .fill(Color.orange.opacity(0.8))
-                                                .frame(width: 8, height: 20)
-                                            
-                                            // Tray with donuts
-                                            ZStack {
-                                                RoundedRectangle(cornerRadius: 4)
-                                                    .fill(Color.black)
-                                                    .frame(width: 35, height: 8)
-                                                
-                                                HStack(spacing: 2) {
-                                                    ForEach(0..<3, id: \.self) { _ in
-                                                        Circle()
-                                                            .fill(Color.pink)
-                                                            .frame(width: 8, height: 8)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        // Right arm with donut
-                                        VStack {
-                                            Rectangle()
-                                                .fill(Color.orange.opacity(0.8))
-                                                .frame(width: 8, height: 15)
-                                            
-                                            Circle()
-                                                .fill(Color.pink)
-                                                .frame(width: 12, height: 12)
-                                        }
-                                    }
-                                    .offset(y: -10)
-                                }
-                                
-                                Spacer()
-                                
-                                // Table and lamp on the right
-                                VStack(spacing: 0) {
-                                    // Lamp
-                                    VStack(spacing: 0) {
-                                        // Wire
-                                        Rectangle()
-                                            .fill(Color.black)
-                                            .frame(width: 1, height: 20)
-                                        
-                                        // Lamp shade
-                                        Ellipse()
-                                            .fill(Color.purple)
-                                            .frame(width: 25, height: 15)
-                                        
-                                        // Light
-                                        Ellipse()
-                                            .fill(Color.yellow.opacity(0.3))
-                                            .frame(width: 30, height: 20)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    // Table
-                                    VStack(spacing: 0) {
-                                        // Table top
-                                        Circle()
-                                            .fill(Color.white)
-                                            .frame(width: 30, height: 8)
-                                            .overlay(
-                                                Circle()
-                                                    .stroke(Color.black, lineWidth: 1)
-                                            )
-                                        
-                                        // Table legs
-                                        HStack(spacing: 15) {
-                                            Rectangle()
-                                                .fill(Color.black)
-                                                .frame(width: 2, height: 20)
-                                            
-                                            Rectangle()
-                                                .fill(Color.black)
-                                                .frame(width: 2, height: 20)
-                                        }
-                                    }
-                                }
-                                .padding(.trailing, 40)
-                            }
-                            .frame(height: 200)
-                        }
+                            .fill(LinearGradient(
+                                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Text("J")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(.white)
+                            )
                     }
-                }
-                
-                Spacer()
-                
-                // Welcome Text
-                VStack(spacing: 16) {
+                    .padding(.horizontal, 24)
+                    .padding(.top, 60)
+                    .padding(.bottom, 20)
+                    
+                    // Welcome Card
+                    VStack(spacing: 24) {
+                        // Icon
+                                            ZStack {
+                                                        Circle()
+                                .fill(LinearGradient(
+                                    gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .frame(width: 120, height: 120)
+                            
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 48, weight: .medium))
+                                .foregroundColor(.blue)
+                        }
+                        
+                        // Title and Description
+                        VStack(spacing: 12) {
                     Text("Welcome to")
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundColor(.secondary)
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.gray)
                     
                     Text("your personal")
                         .font(.system(size: 28, weight: .bold))
@@ -361,13 +1520,101 @@ struct WelcomeView: View {
                     Text("health tracker")
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.black)
-                }
+                            
+                            Text("Let's set up your personalized health tracking experience")
+                                .font(.system(size: 16, weight: .regular))
+                                .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
+                                .padding(.horizontal, 20)
+                        }
+                    }
+                    .padding(32)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white)
+                            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 32)
+                    
+                    // Features Preview
+                    VStack(spacing: 16) {
+                        Text("What you'll get")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 24)
+                        
+                        VStack(spacing: 12) {
+                            FeatureRow(
+                                icon: "heart.fill",
+                                title: "Symptom Tracking",
+                                description: "Monitor your symptoms daily",
+                                color: .red
+                            )
+                            
+                            FeatureRow(
+                                icon: "pills.fill",
+                                title: "Medication Reminders",
+                                description: "Never miss a dose",
+                                color: .blue
+                            )
+                            
+                            FeatureRow(
+                                icon: "chart.line.uptrend.xyaxis",
+                                title: "Health Insights",
+                                description: "Understand your patterns",
+                                color: .green
+                            )
+                        }
+                        .padding(.horizontal, 24)
+                    }
+                    
+                    Spacer(minLength: 100)
+                }
+            }
+        }
+        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+    }
+}
+
+// MARK: - Feature Row
+struct FeatureRow: View {
+    let icon: String
+    let title: String
+    let description: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.1))
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(color)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                
+                Text(description)
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(.gray)
+                }
                 
                 Spacer()
             }
-        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+        )
     }
 }
 
@@ -445,26 +1692,63 @@ struct AddConditionsView: View {
     ]
 
     var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
         VStack(spacing: 0) {
+                    // Header with Profile
+                    HStack {
             Spacer()
             
-            VStack(spacing: 50) {
-                // Header
-                VStack(spacing: 20) {
-                    Text("Your conditions")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
+                        // Profile Avatar
+                        Circle()
+                            .fill(LinearGradient(
+                                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Text("J")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(.white)
+                            )
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 60)
+                    .padding(.bottom, 20)
+                    
+                    // Title Card
+                    VStack(spacing: 16) {
+                        HStack {
+                            Image(systemName: "heart.text.square")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.blue)
+                            
+                            Text("Your Conditions")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
                     
                     Text("Help us understand your health profile")
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                }
-                
-                // Conditions List
-                VStack(spacing: 12) {
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundColor(.gray)
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 16)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white)
+                            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
+                    
+                    // Conditions Grid
+                    VStack(spacing: 16) {
                     ForEach(conditions.prefix(4), id: \.self) { condition in
                         ModernConditionCard(
                             condition: condition,
@@ -484,33 +1768,49 @@ struct AddConditionsView: View {
                         // Add new condition functionality
                     }) {
                         HStack(spacing: 12) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.blue.opacity(0.1))
+                                        .frame(width: 44, height: 44)
+                                    
                             Image(systemName: "plus")
-                                .font(.system(size: 16, weight: .light))
-                                .foregroundColor(.black)
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundColor(.blue)
+                                }
                             
+                                VStack(alignment: .leading, spacing: 4) {
                             Text("Add another condition")
-                                .font(.system(size: 16, weight: .regular))
+                                        .font(.system(size: 16, weight: .semibold))
                                 .foregroundColor(.black)
+                                    
+                                    Text("Tap to add a custom condition")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(.gray)
+                                }
                             
                             Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.gray)
                         }
-                        .padding(.horizontal, 24)
+                            .padding(.horizontal, 20)
                         .padding(.vertical, 16)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.black.opacity(0.05))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color.black.opacity(0.1), lineWidth: 1)
-                                )
-                        )
+                                    .fill(Color.white)
+                                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
+                    .padding(.horizontal, 24)
+                    
+                    Spacer(minLength: 100)
                 }
-                .padding(.horizontal, 40)
             }
-            
-            Spacer()
         }
+        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
     }
 }
 
@@ -523,34 +1823,52 @@ struct ModernConditionCard: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? .blue : .gray)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                Text(condition)
+                        .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                    .multilineTextAlignment(.leading)
+                    
+                    Text("Health condition")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
                 // Selection indicator
                 ZStack {
                     Circle()
-                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                        .stroke(isSelected ? Color.blue : Color.gray.opacity(0.3), lineWidth: 2)
                         .frame(width: 24, height: 24)
                     
                     if isSelected {
-                        Circle()
-                            .fill(Color.black)
-                            .frame(width: 12, height: 12)
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.blue)
                     }
                 }
-                
-                Text(condition)
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.leading)
-                
-                Spacer()
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 20)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(isSelected ? Color.black.opacity(0.05) : Color.clear)
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(isSelected ? Color.black.opacity(0.2) : Color.black.opacity(0.1), lineWidth: 1)
+                            .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -568,29 +1886,66 @@ struct AddSymptomsView: View {
     let skinSymptoms = ["Rash", "Itching", "Dryness", "Redness", "Swelling"]
 
     var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
         VStack(spacing: 0) {
+                    // Header with Profile
+                    HStack {
             Spacer()
             
-            VStack(spacing: 50) {
-                // Header
-                VStack(spacing: 20) {
-                    Text("Track your symptoms")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
+                        // Profile Avatar
+                        Circle()
+                            .fill(LinearGradient(
+                                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Text("J")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(.white)
+                            )
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 60)
+                    .padding(.bottom, 20)
+                    
+                    // Title Card
+                    VStack(spacing: 16) {
+                        HStack {
+                            Image(systemName: "heart.text.square")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.blue)
+                            
+                            Text("Track Your Symptoms")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
                     
                     Text("Select symptoms you experience regularly")
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                }
-                
-                // Search field
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundColor(.gray)
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 16)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white)
+                            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
+                    
+                    // Search Bar
                 HStack(spacing: 12) {
                     Image(systemName: "magnifyingglass")
-                        .font(.system(size: 16, weight: .light))
-                        .foregroundColor(.secondary)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.gray)
                     
                     TextField("Search symptoms...", text: $searchText)
                         .font(.system(size: 16, weight: .regular))
@@ -599,26 +1954,25 @@ struct AddSymptomsView: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
                 .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.black.opacity(0.05))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.black.opacity(0.1), lineWidth: 1)
-                        )
-                )
-                .padding(.horizontal, 40)
-            }
-            
-            Spacer()
-            
-            ScrollView {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.white)
+                            .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
+                    
+                    // Symptoms Categories
                 VStack(spacing: 24) {
                     // Vision & Eye Category
                     VStack(alignment: .leading, spacing: 16) {
+                            HStack {
                         Text("Vision & Eye")
-                            .font(.system(size: 20, weight: .semibold))
+                                    .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.black)
-                            .padding(.horizontal, 40)
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal, 24)
                         
                         VStack(spacing: 12) {
                             ForEach(visionSymptoms, id: \.self) { symptom in
@@ -643,15 +1997,19 @@ struct AddSymptomsView: View {
                                 )
                             }
                         }
-                        .padding(.horizontal, 40)
+                            .padding(.horizontal, 24)
                     }
                     
                     // Skin & Dermatological Category
                     VStack(alignment: .leading, spacing: 16) {
+                            HStack {
                         Text("Skin & Dermatological")
-                            .font(.system(size: 20, weight: .semibold))
+                                    .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.black)
-                            .padding(.horizontal, 40)
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal, 24)
                         
                         VStack(spacing: 12) {
                             ForEach(skinSymptoms, id: \.self) { symptom in
@@ -676,12 +2034,15 @@ struct AddSymptomsView: View {
                                 )
                             }
                         }
-                        .padding(.horizontal, 40)
+                            .padding(.horizontal, 24)
                     }
                 }
-                .padding(.bottom, 40)
+                    
+                    Spacer(minLength: 100)
             }
         }
+        }
+        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
     }
 }
 
@@ -766,26 +2127,63 @@ struct FlareFrequencyView: View {
     let frequencies = ["Constant", "Intermittent", "Occasionally", "Sporadic"]
     
     var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
         VStack(spacing: 0) {
+                    // Header with Profile
+                    HStack {
             Spacer()
             
-            VStack(spacing: 50) {
-                // Header
-                VStack(spacing: 20) {
-                    Text("Flare frequency")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
+                        // Profile Avatar
+                        Circle()
+                            .fill(LinearGradient(
+                                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Text("J")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(.white)
+                            )
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 60)
+                    .padding(.bottom, 20)
+                    
+                    // Title Card
+                    VStack(spacing: 16) {
+                        HStack {
+                            Image(systemName: "waveform.path.ecg")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.blue)
+                            
+                            Text("Flare Frequency")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
                     
                     Text("How often do your symptoms flare up?")
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                }
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundColor(.gray)
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 16)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.white)
+                            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
                 
                 // Frequency Options
-                VStack(spacing: 12) {
+                    VStack(spacing: 16) {
                     ForEach(frequencies, id: \.self) { frequency in
                         ModernFrequencyCard(
                             frequency: frequency,
@@ -796,11 +2194,13 @@ struct FlareFrequencyView: View {
                         )
                     }
                 }
-                .padding(.horizontal, 40)
-            }
+                    .padding(.horizontal, 24)
             
-            Spacer()
+                    Spacer(minLength: 100)
         }
+            }
+        }
+        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
     }
 }
 
@@ -810,36 +2210,74 @@ struct ModernFrequencyCard: View {
     let isSelected: Bool
     let onTap: () -> Void
     
+    private var frequencyIcon: String {
+        switch frequency {
+        case "Constant": return "circle.fill"
+        case "Intermittent": return "circle.lefthalf.filled"
+        case "Occasionally": return "circle.dotted"
+        case "Sporadic": return "circle"
+        default: return "circle"
+        }
+    }
+    
+    private var frequencyColor: Color {
+        switch frequency {
+        case "Constant": return .red
+        case "Intermittent": return .orange
+        case "Occasionally": return .yellow
+        case "Sporadic": return .green
+        default: return .gray
+        }
+    }
+    
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? frequencyColor.opacity(0.2) : Color.gray.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: frequencyIcon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isSelected ? frequencyColor : .gray)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                Text(frequency)
+                        .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                    Text("Symptom frequency")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(.gray)
+                }
+                
+            Spacer()
+            
                 // Selection indicator
                 ZStack {
                     Circle()
-                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                        .stroke(isSelected ? frequencyColor : Color.gray.opacity(0.3), lineWidth: 2)
                         .frame(width: 24, height: 24)
                     
                     if isSelected {
-                        Circle()
-                            .fill(Color.black)
-                            .frame(width: 12, height: 12)
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(frequencyColor)
                     }
                 }
-                
-                Text(frequency)
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.black)
-                
-                Spacer()
-            }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 20)
-            .background(
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(isSelected ? Color.black.opacity(0.05) : Color.clear)
-                    .overlay(
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                        .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(isSelected ? Color.black.opacity(0.2) : Color.black.opacity(0.1), lineWidth: 1)
+                            .stroke(isSelected ? frequencyColor : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -847,115 +2285,6 @@ struct ModernFrequencyCard: View {
     }
 }
 
-// MARK: - Triggers View
-struct TriggersView: View {
-    @Binding var selectedTriggers: Set<String>
-    @State private var searchText = ""
-    
-    let dietTriggers = ["Caffeine", "Sugar", "Dairy", "Gluten"]
-    let environmentTriggers = ["Work", "Travel", "Exercise", "School"]
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            
-            VStack(spacing: 50) {
-                // Header
-                VStack(spacing: 20) {
-                    Text("Track your triggers")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
-                    
-                    Text("Identify what affects your symptoms")
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                }
-                
-                // Search field
-                HStack(spacing: 12) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 16, weight: .light))
-                        .foregroundColor(.secondary)
-                    
-                    TextField("Search triggers...", text: $searchText)
-                        .font(.system(size: 16, weight: .regular))
-                        .textFieldStyle(PlainTextFieldStyle())
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.black.opacity(0.05))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.black.opacity(0.1), lineWidth: 1)
-                        )
-                )
-                .padding(.horizontal, 40)
-            }
-            
-            Spacer()
-            
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Diet Category
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Diet")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.black)
-                            .padding(.horizontal, 40)
-                        
-                        VStack(spacing: 12) {
-                            ForEach(dietTriggers, id: \.self) { trigger in
-                                ModernTriggerCard(
-                                    trigger: trigger,
-                                    isSelected: selectedTriggers.contains(trigger),
-                                    onTap: {
-                                        if selectedTriggers.contains(trigger) {
-                                            selectedTriggers.remove(trigger)
-                                        } else {
-                                            selectedTriggers.insert(trigger)
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                        .padding(.horizontal, 40)
-                    }
-                    
-                    // Environment Category
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Environment")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.black)
-                            .padding(.horizontal, 40)
-                        
-                        VStack(spacing: 12) {
-                            ForEach(environmentTriggers, id: \.self) { trigger in
-                                ModernTriggerCard(
-                                    trigger: trigger,
-                                    isSelected: selectedTriggers.contains(trigger),
-                                    onTap: {
-                                        if selectedTriggers.contains(trigger) {
-                                            selectedTriggers.remove(trigger)
-                                        } else {
-                                            selectedTriggers.insert(trigger)
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                        .padding(.horizontal, 40)
-                    }
-                }
-                .padding(.bottom, 40)
-            }
-        }
-    }
-}
 
 // MARK: - Modern Trigger Card
 struct ModernTriggerCard: View {
@@ -1001,75 +2330,6 @@ struct ModernTriggerCard: View {
     }
 }
 
-// MARK: - Goals View
-struct GoalsView: View {
-    @Binding var selectedGoals: Set<String>
-    @Binding var showOnboarding: Bool
-    
-    let goals = [
-        ("Reduce symptom severity", "chart.line.uptrend.xyaxis"),
-        ("Track treatments", "pills.fill"),
-        ("Share data with doctors", "person.crop.circle.badge.checkmark"),
-        ("Discover flare triggers", "magnifyingglass")
-    ]
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-            
-            VStack(spacing: 50) {
-                // Header
-                VStack(spacing: 20) {
-                    Text("Your goals")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
-                    
-                    Text("What matters most to you?")
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                }
-                
-                // Goals List
-                VStack(spacing: 12) {
-                    ForEach(goals, id: \.0) { goal in
-                        ModernGoalCard(
-                            goal: goal.0,
-                            icon: goal.1,
-                            isSelected: selectedGoals.contains(goal.0),
-                            onTap: {
-                                if selectedGoals.contains(goal.0) {
-                                    selectedGoals.remove(goal.0)
-                                } else {
-                                    selectedGoals.insert(goal.0)
-                                }
-                            }
-                        )
-                    }
-                }
-                .padding(.horizontal, 40)
-            }
-            
-            Spacer()
-            
-            // Complete setup button
-            Button("Complete Setup") {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    showOnboarding = false
-                }
-            }
-            .font(.system(size: 16, weight: .medium))
-            .foregroundColor(.white)
-            .padding(.horizontal, 40)
-            .padding(.vertical, 16)
-            .background(Color.black)
-            .cornerRadius(12)
-            .padding(.bottom, 40)
-        }
-    }
-}
 
 // MARK: - Modern Goal Card
 struct ModernGoalCard: View {
@@ -2518,11 +3778,39 @@ struct SleepLogView: View {
 // MARK: - Therapy Tracking View
 struct TherapyTrackingView: View {
     @Binding var currentScreen: AppScreen
+    @State private var selectedTherapyType: TherapyType = .mental
     @State private var moodRating = 3
     @State private var stressLevel = 3
     @State private var therapyNotes = ""
     @State private var showingTherapySession = false
     @State private var selectedActivities: Set<String> = []
+    @State private var painLevel = 3
+    @State private var flexibilityLevel = 3
+    @State private var strengthLevel = 3
+    @State private var sessionDuration = 30
+    @State private var therapistName = ""
+    
+    enum TherapyType: String, CaseIterable {
+        case mental = "Mental Health"
+        case physical = "Physical Therapy"
+        case combined = "Combined"
+        
+        var icon: String {
+            switch self {
+            case .mental: return "🧠"
+            case .physical: return "💪"
+            case .combined: return "🔄"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .mental: return .blue
+            case .physical: return .green
+            case .combined: return .purple
+            }
+        }
+    }
     
     private let moodOptions = [
         (1, "😢", "Very Low", Color.red),
@@ -2540,10 +3828,36 @@ struct TherapyTrackingView: View {
         (5, "Very High", Color.purple)
     ]
     
-    private let therapyActivities = [
-        "Meditation", "Deep Breathing", "Journaling", "Exercise", 
-        "Reading", "Music", "Nature Walk", "Art Therapy"
+    private let levelOptions = [
+        (1, "Very Poor", Color.red),
+        (2, "Poor", Color.orange),
+        (3, "Fair", Color.yellow),
+        (4, "Good", Color.green),
+        (5, "Excellent", Color.blue)
     ]
+    
+    private let mentalTherapyActivities = [
+        "Meditation", "Deep Breathing", "Journaling", "Cognitive Therapy",
+        "Reading", "Music Therapy", "Nature Walk", "Art Therapy",
+        "Mindfulness", "Progressive Relaxation", "Guided Imagery", "Breathing Exercises"
+    ]
+    
+    private let physicalTherapyActivities = [
+        "Stretching", "Strength Training", "Balance Exercises", "Range of Motion",
+        "Massage Therapy", "Heat/Cold Therapy", "Aquatic Therapy", "Manual Therapy",
+        "Posture Correction", "Core Strengthening", "Joint Mobilization", "Gait Training"
+    ]
+    
+    private var currentActivities: [String] {
+        switch selectedTherapyType {
+        case .mental:
+            return mentalTherapyActivities
+        case .physical:
+            return physicalTherapyActivities
+        case .combined:
+            return mentalTherapyActivities + physicalTherapyActivities
+        }
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -2579,8 +3893,47 @@ struct TherapyTrackingView: View {
                     .padding(.top, 60)
                     .padding(.bottom, 20)
                     
-                    // Mood & Stress Summary
+                    // Therapy Type Selector
+                    VStack(spacing: 16) {
+                        Text("Therapy Type")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 24)
+                        
+                        HStack(spacing: 12) {
+                            ForEach(TherapyType.allCases, id: \.self) { type in
+                                Button(action: {
+                                    selectedTherapyType = type
+                                }) {
+                                    VStack(spacing: 8) {
+                                        Text(type.icon)
+                                            .font(.system(size: 24))
+                                        
+                                        Text(type.rawValue)
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.black)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(selectedTherapyType == type ? type.color.opacity(0.2) : Color.gray.opacity(0.1))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .stroke(selectedTherapyType == type ? type.color : Color.clear, lineWidth: 2)
+                                            )
+                                    )
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                    }
+                    .padding(.bottom, 24)
+                    
+                    // Dynamic Summary based on Therapy Type
                     VStack(spacing: 20) {
+                        if selectedTherapyType == .mental || selectedTherapyType == .combined {
                         HStack {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Current Mood")
@@ -2607,6 +3960,63 @@ struct TherapyTrackingView: View {
                                 Text(stressOptions[stressLevel - 1].1)
                                     .font(.system(size: 18, weight: .bold))
                                     .foregroundColor(stressOptions[stressLevel - 1].2)
+                                }
+                            }
+                        }
+                        
+                        if selectedTherapyType == .physical || selectedTherapyType == .combined {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Pain Level")
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundColor(.gray)
+                                    
+                                    HStack(spacing: 8) {
+                                        Text("🩹")
+                                            .font(.system(size: 32))
+                                        
+                                        Text(levelOptions[painLevel - 1].1)
+                                            .font(.system(size: 18, weight: .bold))
+                                            .foregroundColor(levelOptions[painLevel - 1].2)
+                                    }
+                                }
+                                
+                                Spacer()
+                                
+                                VStack(alignment: .trailing, spacing: 8) {
+                                    Text("Flexibility")
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundColor(.gray)
+                                    
+                                    Text(levelOptions[flexibilityLevel - 1].1)
+                                        .font(.system(size: 18, weight: .bold))
+                                        .foregroundColor(levelOptions[flexibilityLevel - 1].2)
+                                }
+                            }
+                        }
+                        
+                        // Session Duration & Therapist
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Session Duration")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.gray)
+                                
+                                Text("\(sessionDuration) minutes")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.blue)
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing, spacing: 8) {
+                                Text("Therapist")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.gray)
+                                
+                                Text(therapistName.isEmpty ? "Not specified" : therapistName)
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.blue)
                             }
                         }
                     }
@@ -2619,7 +4029,8 @@ struct TherapyTrackingView: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
                     
-                    // Mood Rating
+                    // Mood Rating (Mental & Combined)
+                    if selectedTherapyType == .mental || selectedTherapyType == .combined {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("How are you feeling?")
                             .font(.system(size: 18, weight: .bold))
@@ -2652,8 +4063,10 @@ struct TherapyTrackingView: View {
                         .padding(.horizontal, 24)
                     }
                     .padding(.bottom, 24)
+                    }
                     
-                    // Stress Level
+                    // Stress Level (Mental & Combined)
+                    if selectedTherapyType == .mental || selectedTherapyType == .combined {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Stress Level")
                             .font(.system(size: 18, weight: .bold))
@@ -2689,6 +4102,219 @@ struct TherapyTrackingView: View {
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                 }
+                                }
+                            }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color.white)
+                                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                            )
+                            .padding(.horizontal, 24)
+                        }
+                        .padding(.bottom, 24)
+                    }
+                    
+                    // Physical Therapy Ratings
+                    if selectedTherapyType == .physical || selectedTherapyType == .combined {
+                        VStack(spacing: 24) {
+                            // Pain Level
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Pain Level")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.black)
+                                    .padding(.horizontal, 24)
+                                
+                                VStack(spacing: 16) {
+                                    HStack {
+                                        Text("Current Pain")
+                                            .font(.system(size: 16, weight: .medium))
+                                            .foregroundColor(.black)
+                                        
+                                        Spacer()
+                                        
+                                        Text(levelOptions[painLevel - 1].1)
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(levelOptions[painLevel - 1].2)
+                                    }
+                                    
+                                    HStack {
+                                        ForEach(levelOptions, id: \.0) { option in
+                                            Button(action: {
+                                                painLevel = option.0
+                                            }) {
+                                                Circle()
+                                                    .fill(painLevel == option.0 ? option.2 : Color.gray.opacity(0.3))
+                                                    .frame(width: 40, height: 40)
+                                                    .overlay(
+                                                        Text("\(option.0)")
+                                                            .font(.system(size: 16, weight: .bold))
+                                                            .foregroundColor(painLevel == option.0 ? .white : .gray)
+                                                    )
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                    }
+                                }
+                                .padding(20)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color.white)
+                                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                )
+                                .padding(.horizontal, 24)
+                            }
+                            
+                            // Flexibility Level
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Flexibility Level")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.black)
+                                    .padding(.horizontal, 24)
+                                
+                                VStack(spacing: 16) {
+                                    HStack {
+                                        Text("Current Flexibility")
+                                            .font(.system(size: 16, weight: .medium))
+                                            .foregroundColor(.black)
+                                        
+                                        Spacer()
+                                        
+                                        Text(levelOptions[flexibilityLevel - 1].1)
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(levelOptions[flexibilityLevel - 1].2)
+                                    }
+                                    
+                                    HStack {
+                                        ForEach(levelOptions, id: \.0) { option in
+                                            Button(action: {
+                                                flexibilityLevel = option.0
+                                            }) {
+                                                Circle()
+                                                    .fill(flexibilityLevel == option.0 ? option.2 : Color.gray.opacity(0.3))
+                                                    .frame(width: 40, height: 40)
+                                                    .overlay(
+                                                        Text("\(option.0)")
+                                                            .font(.system(size: 16, weight: .bold))
+                                                            .foregroundColor(flexibilityLevel == option.0 ? .white : .gray)
+                                                    )
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                    }
+                                }
+                                .padding(20)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color.white)
+                                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                )
+                                .padding(.horizontal, 24)
+                            }
+                            
+                            // Strength Level
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Strength Level")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.black)
+                                    .padding(.horizontal, 24)
+                                
+                                VStack(spacing: 16) {
+                                    HStack {
+                                        Text("Current Strength")
+                                            .font(.system(size: 16, weight: .medium))
+                                            .foregroundColor(.black)
+                                        
+                                        Spacer()
+                                        
+                                        Text(levelOptions[strengthLevel - 1].1)
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(levelOptions[strengthLevel - 1].2)
+                                    }
+                                    
+                                    HStack {
+                                        ForEach(levelOptions, id: \.0) { option in
+                                            Button(action: {
+                                                strengthLevel = option.0
+                                            }) {
+                                                Circle()
+                                                    .fill(strengthLevel == option.0 ? option.2 : Color.gray.opacity(0.3))
+                                                    .frame(width: 40, height: 40)
+                                                    .overlay(
+                                                        Text("\(option.0)")
+                                                            .font(.system(size: 16, weight: .bold))
+                                                            .foregroundColor(strengthLevel == option.0 ? .white : .gray)
+                                                    )
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                        }
+                                    }
+                                }
+                                .padding(20)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(Color.white)
+                                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                )
+                                .padding(.horizontal, 24)
+                            }
+                        }
+                        .padding(.bottom, 24)
+                    }
+                    
+                    // Session Details
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Session Details")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 24)
+                        
+                        VStack(spacing: 16) {
+                            // Session Duration
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Session Duration")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.black)
+                                
+                                HStack {
+                                    Text("\(sessionDuration) minutes")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(.blue)
+                                    
+                                    Spacer()
+                                    
+                                    HStack(spacing: 8) {
+                                        Button(action: {
+                                            if sessionDuration > 5 {
+                                                sessionDuration -= 5
+                                            }
+                                        }) {
+                                            Image(systemName: "minus.circle.fill")
+                                                .font(.system(size: 24))
+                                                .foregroundColor(.blue)
+                                        }
+                                        
+                                        Button(action: {
+                                            if sessionDuration < 120 {
+                                                sessionDuration += 5
+                                            }
+                                        }) {
+                                            Image(systemName: "plus.circle.fill")
+                                                .font(.system(size: 24))
+                                                .foregroundColor(.blue)
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Therapist Name
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Therapist Name")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.black)
+                                
+                                TextField("Enter therapist name", text: $therapistName)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
                             }
                         }
                         .padding(20)
@@ -2712,7 +4338,7 @@ struct TherapyTrackingView: View {
                             GridItem(.flexible()),
                             GridItem(.flexible())
                         ], spacing: 12) {
-                            ForEach(therapyActivities, id: \.self) { activity in
+                            ForEach(currentActivities, id: \.self) { activity in
                                 Button(action: {
                                     if selectedActivities.contains(activity) {
                                         selectedActivities.remove(activity)
@@ -2737,7 +4363,7 @@ struct TherapyTrackingView: View {
                                     .padding(.vertical, 12)
                                     .background(
                                         RoundedRectangle(cornerRadius: 12)
-                                            .fill(selectedActivities.contains(activity) ? Color.green : Color.gray.opacity(0.1))
+                                            .fill(selectedActivities.contains(activity) ? selectedTherapyType.color : Color.gray.opacity(0.1))
                                     )
                                 }
                                 .buttonStyle(PlainButtonStyle())
@@ -2747,18 +4373,27 @@ struct TherapyTrackingView: View {
                     }
                     .padding(.bottom, 24)
                     
-                    // Mental Health Tips
+                    // Therapy Tips (Dynamic based on type)
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Mental Health Tips")
+                        Text("\(selectedTherapyType.rawValue) Tips")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.black)
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 12) {
-                            TherapyTipRow(icon: "heart.fill", tip: "Practice gratitude daily")
-                            TherapyTipRow(icon: "leaf.fill", tip: "Spend time in nature")
-                            TherapyTipRow(icon: "person.2.fill", tip: "Connect with loved ones")
-                            TherapyTipRow(icon: "book.fill", tip: "Read something inspiring")
+                            if selectedTherapyType == .mental || selectedTherapyType == .combined {
+                                TherapyTipRow(icon: "heart.fill", tip: "Practice gratitude daily", color: .blue)
+                                TherapyTipRow(icon: "leaf.fill", tip: "Spend time in nature", color: .blue)
+                                TherapyTipRow(icon: "person.2.fill", tip: "Connect with loved ones", color: .blue)
+                                TherapyTipRow(icon: "book.fill", tip: "Read something inspiring", color: .blue)
+                            }
+                            
+                            if selectedTherapyType == .physical || selectedTherapyType == .combined {
+                                TherapyTipRow(icon: "figure.strengthtraining.traditional", tip: "Stay consistent with exercises", color: .green)
+                                TherapyTipRow(icon: "thermometer", tip: "Use heat/cold therapy as needed", color: .green)
+                                TherapyTipRow(icon: "figure.walk", tip: "Take regular movement breaks", color: .green)
+                                TherapyTipRow(icon: "drop.fill", tip: "Stay hydrated throughout the day", color: .green)
+                            }
                         }
                         .padding(20)
                         .background(
@@ -2783,12 +4418,13 @@ struct TherapyTrackingView: View {
 struct TherapyTipRow: View {
     let icon: String
     let tip: String
+    let color: Color
     
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.green)
+                .foregroundColor(color)
                 .frame(width: 20)
             
             Text(tip)
@@ -2805,12 +4441,75 @@ struct TherapySessionView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var sessionNotes = ""
     @State private var sessionType = "Individual"
+    @State private var selectedTherapyType: TherapyType = .mental
+    @State private var therapistName = ""
+    @State private var sessionDuration = 30
+    @State private var sessionGoals = ""
+    
+    enum TherapyType: String, CaseIterable {
+        case mental = "Mental Health"
+        case physical = "Physical Therapy"
+        case combined = "Combined"
+        
+        var icon: String {
+            switch self {
+            case .mental: return "🧠"
+            case .physical: return "💪"
+            case .combined: return "🔄"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .mental: return .blue
+            case .physical: return .green
+            case .combined: return .purple
+            }
+        }
+    }
     
     private let sessionTypes = ["Individual", "Group", "Family", "Couples"]
     
     var body: some View {
         NavigationView {
+            ScrollView {
             VStack(spacing: 24) {
+                    // Therapy Type Selection
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Therapy Type")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.black)
+                        
+                        HStack(spacing: 12) {
+                            ForEach(TherapyType.allCases, id: \.self) { type in
+                                Button(action: {
+                                    selectedTherapyType = type
+                                }) {
+                                    VStack(spacing: 4) {
+                                        Text(type.icon)
+                                            .font(.system(size: 20))
+                                        
+                                        Text(type.rawValue)
+                                            .font(.system(size: 10, weight: .medium))
+                                            .foregroundColor(.black)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(selectedTherapyType == type ? type.color.opacity(0.2) : Color.gray.opacity(0.1))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .stroke(selectedTherapyType == type ? type.color : Color.clear, lineWidth: 2)
+                                            )
+                                    )
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                    }
+                    
+                    // Session Type
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Session Type")
                         .font(.system(size: 16, weight: .medium))
@@ -2824,6 +4523,69 @@ struct TherapySessionView: View {
                     .pickerStyle(SegmentedPickerStyle())
                 }
                 
+                    // Therapist Name
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Therapist Name")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.black)
+                        
+                        TextField("Enter therapist name", text: $therapistName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                    }
+                    
+                    // Session Duration
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Session Duration")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.black)
+                        
+                        HStack {
+                            Text("\(sessionDuration) minutes")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(selectedTherapyType.color)
+                            
+                            Spacer()
+                            
+                            HStack(spacing: 8) {
+                                Button(action: {
+                                    if sessionDuration > 5 {
+                                        sessionDuration -= 5
+                                    }
+                                }) {
+                                    Image(systemName: "minus.circle.fill")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(selectedTherapyType.color)
+                                }
+                                
+                                Button(action: {
+                                    if sessionDuration < 120 {
+                                        sessionDuration += 5
+                                    }
+                                }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(selectedTherapyType.color)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                    
+                    // Session Goals
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Session Goals")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.black)
+                        
+                        TextField("What do you hope to achieve in this session?", text: $sessionGoals, axis: .vertical)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .lineLimit(3...6)
+                    }
+                    
+                    // Session Notes
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Session Notes")
                         .font(.system(size: 16, weight: .medium))
@@ -2834,8 +4596,7 @@ struct TherapySessionView: View {
                         .lineLimit(5...10)
                 }
                 
-                Spacer()
-                
+                    // Save Button
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
@@ -2844,11 +4605,12 @@ struct TherapySessionView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(Color.green)
+                            .background(selectedTherapyType.color)
                         .cornerRadius(12)
                 }
             }
             .padding(24)
+            }
             .navigationTitle("Therapy Session")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
@@ -3375,6 +5137,194 @@ extension DateFormatter {
 }()
 }
 
+
+// MARK: - Onboarding Summary View
+struct OnboardingSummaryView: View {
+    @Binding var userName: String
+    @Binding var selectedConditions: Set<String>
+    @Binding var selectedSymptoms: Set<String>
+    @Binding var severityLevel: Double
+    @Binding var flareFrequency: String
+    @Binding var selectedTriggers: Set<String>
+    @Binding var selectedRoutines: Set<String>
+    @Binding var selectedGoals: Set<String>
+    @Binding var showOnboarding: Bool
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 16) {
+                Text("Review Your Setup")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.black)
+                
+                Text("Let's make sure everything looks good")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+            .padding(.horizontal, 24)
+            
+            // Summary content
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Profile summary
+                    SummarySection(
+                        title: "Profile",
+                        icon: "person.fill",
+                        color: .blue
+                    ) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Name: \(userName.isEmpty ? "Not provided" : userName)")
+                                .font(.system(size: 14, weight: .regular))
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    
+                    // Conditions summary
+                    if !selectedConditions.isEmpty {
+                        SummarySection(
+                            title: "Chronic Illness",
+                            icon: "heart.fill",
+                            color: .red
+                        ) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ForEach(Array(selectedConditions), id: \.self) { condition in
+                                    Text("• \(condition)")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Symptoms summary
+                    if !selectedSymptoms.isEmpty {
+                        SummarySection(
+                            title: "Symptoms",
+                            icon: "bandage.fill",
+                            color: .orange
+                        ) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ForEach(Array(selectedSymptoms), id: \.self) { symptom in
+                                    Text("• \(symptom)")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Flare pattern summary
+                    SummarySection(
+                        title: "Flare Pattern",
+                        icon: "waveform.path.ecg",
+                        color: .purple
+                    ) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("• \(flareFrequency.isEmpty ? "Not selected" : flareFrequency)")
+                                .font(.system(size: 14, weight: .regular))
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    
+                    // Triggers summary
+                    if !selectedTriggers.isEmpty {
+                        SummarySection(
+                            title: "Triggers to Track",
+                            icon: "exclamationmark.triangle.fill",
+                            color: .yellow
+                        ) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ForEach(Array(selectedTriggers), id: \.self) { trigger in
+                                    Text("• \(trigger)")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Routines summary
+                    if !selectedRoutines.isEmpty {
+                        SummarySection(
+                            title: "Things You Want to Track",
+                            icon: "checkmark.circle.fill",
+                            color: .green
+                        ) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ForEach(Array(selectedRoutines), id: \.self) { routine in
+                                    Text("• \(routine)")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Goals summary
+                    if !selectedGoals.isEmpty {
+                        SummarySection(
+                            title: "Your Goals",
+                            icon: "target",
+                            color: .indigo
+                        ) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ForEach(Array(selectedGoals), id: \.self) { goal in
+                                    Text("• \(goal)")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 24)
+            }
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Summary Section
+struct SummarySection<Content: View>: View {
+    let title: String
+    let icon: String
+    let color: Color
+    @ViewBuilder let content: Content
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.1))
+                        .frame(width: 32, height: 32)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(color)
+                }
+                
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                Spacer()
+            }
+            
+            content
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+        )
+    }
+}
 
 #Preview {
     ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
