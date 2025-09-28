@@ -62,6 +62,7 @@ struct TriggersView: View {
                                 } else {
                                     stateManager.selectedTriggers.insert(trigger.0)
                                 }
+                                stateManager.saveOnboardingData()
                             }
                         )
                     }
@@ -87,6 +88,7 @@ struct TriggersView: View {
                                 } else {
                                     stateManager.selectedRoutines.insert(routine.0)
                                 }
+                                stateManager.saveOnboardingData()
                             }
                         )
                     }

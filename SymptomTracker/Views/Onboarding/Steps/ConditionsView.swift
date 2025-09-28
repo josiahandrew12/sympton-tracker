@@ -48,6 +48,7 @@ struct ConditionsView: View {
                             } else {
                                 stateManager.selectedConditions.insert(condition.0)
                             }
+                            stateManager.saveOnboardingData()
                         }
                     )
                 }

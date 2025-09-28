@@ -10,46 +10,37 @@ import CoreData
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @State private var showOnboarding = true
-    @State private var currentStep = 0
-    @State private var userName = ""
-    @State private var selectedConditions: Set<String> = []
-    @State private var selectedSymptoms: Set<String> = []
-    @State private var severityLevel = 5.0
-    @State private var flareFrequency = "Weekly"
-    @State private var selectedTriggers: Set<String> = []
-    @State private var selectedRoutines: Set<String> = []
-    @State private var selectedGoals: Set<String> = []
-    @State private var currentScreen: AppScreen = .home
+    @EnvironmentObject private var stateManager: AppStateManager
 
     var body: some View {
-        if showOnboarding {
+        if stateManager.showOnboarding {
             OnboardingFlowView(
-                currentStep: $currentStep,
-                userName: $userName,
-                selectedConditions: $selectedConditions,
-                selectedSymptoms: $selectedSymptoms,
-                severityLevel: $severityLevel,
-                flareFrequency: $flareFrequency,
-                selectedTriggers: $selectedTriggers,
-                selectedRoutines: $selectedRoutines,
-                selectedGoals: $selectedGoals,
-                showOnboarding: $showOnboarding
+                currentStep: $stateManager.currentStep,
+                userName: $stateManager.userName,
+                selectedConditions: $stateManager.selectedConditions,
+                selectedSymptoms: $stateManager.selectedSymptoms,
+                severityLevel: $stateManager.severityLevel,
+                flareFrequency: $stateManager.flareFrequency,
+                selectedTriggers: $stateManager.selectedTriggers,
+                selectedRoutines: $stateManager.selectedRoutines,
+                selectedGoals: $stateManager.selectedGoals,
+                showOnboarding: $stateManager.showOnboarding,
+                stateManager: stateManager
             )
         } else {
-            switch currentScreen {
+            switch stateManager.currentScreen {
             case .home:
-                HomeScreenView(currentScreen: $currentScreen)
+                HomeScreenView(currentScreen: $stateManager.currentScreen)
             case .foodTracking:
-                FoodTrackingView(currentScreen: $currentScreen)
+                FoodTrackingView(currentScreen: $stateManager.currentScreen)
             case .medicationTracking:
-                MedicationTrackingView(currentScreen: $currentScreen)
+                MedicationTrackingView(currentScreen: $stateManager.currentScreen)
             case .restTracking:
-                RestTrackingView(currentScreen: $currentScreen)
+                RestTrackingView(currentScreen: $stateManager.currentScreen)
             case .therapyTracking:
-                TherapyTrackingView(currentScreen: $currentScreen)
+                TherapyTrackingView(currentScreen: $stateManager.currentScreen)
             case .symptomsTracking:
-                SymptomsTrackingView(currentScreen: $currentScreen)
+                SymptomsTrackingView(currentScreen: $stateManager.currentScreen)
             }
         }
     }
@@ -76,6 +67,7 @@ struct OnboardingFlowView: View {
     @Binding var selectedRoutines: Set<String>
     @Binding var selectedGoals: Set<String>
     @Binding var showOnboarding: Bool
+    @ObservedObject var stateManager: AppStateManager
 
     var body: some View {
         GeometryReader { geometry in
@@ -170,7 +162,7 @@ struct OnboardingFlowView: View {
                             currentStep += 1
                                 } else {
                                     // Complete onboarding
-                                    showOnboarding = false
+                                    stateManager.completeOnboarding()
                                 }
                         }
                     }) {
@@ -420,6 +412,8 @@ struct NewConditionsView: View {
                             } else {
                                 selectedConditions.insert(condition.0)
                             }
+                                print("💾 CONDITION SELECTED: \(condition)")
+                                print("💾 Current conditions: \(selectedConditions)")
                         }
                     )
                 }
@@ -543,7 +537,7 @@ struct NewSymptomsView: View {
         ("Fatigue", "zzz", Color.orange),
         ("Pain", "bandage.fill", Color.red),
         ("Brain Fog", "brain.head.profile", Color.purple),
-        ("Nausea", "stomach.fill", Color.green),
+        ("Nausea", "heart.fill", Color.green),
         ("Headache", "bolt.fill", Color.yellow),
         ("Dizziness", "arrow.triangle.2.circlepath", Color.blue),
         ("Anxiety", "heart.fill", Color.pink),
@@ -583,9 +577,12 @@ struct NewSymptomsView: View {
                                 selectedSymptoms.insert(symptom.0)
                                 symptomSeverities[symptom.0] = 5.0
                             }
+                            print("💾 SYMPTOM SELECTED: \(symptom.0)")
+                            print("💾 Current symptoms: \(selectedSymptoms)")
                         },
                         onSeverityChange: { newValue in
                             symptomSeverities[symptom.0] = newValue
+                            print("💾 SYMPTOM SEVERITY CHANGED: \(symptom.0) = \(newValue)")
                         }
                     )
                 }
@@ -1036,6 +1033,8 @@ struct TriggersView: View {
                                 } else {
                                     selectedTriggers.insert(trigger.0)
                                 }
+                                print("💾 TRIGGER SELECTED: \(trigger.0)")
+                                print("💾 Current triggers: \(selectedTriggers)")
                             }
                         )
                     }
@@ -1061,6 +1060,8 @@ struct TriggersView: View {
                                 } else {
                                     selectedRoutines.insert(routine.0)
                                 }
+                                print("💾 ROUTINE SELECTED: \(routine.0)")
+                                print("💾 Current routines: \(selectedRoutines)")
                             }
                         )
                     }
@@ -1276,6 +1277,8 @@ struct GoalsView: View {
                             } else {
                                 selectedGoals.insert(goal.0)
                             }
+                            print("💾 GOAL SELECTED: \(goal.0)")
+                            print("💾 Current goals: \(selectedGoals)")
                         }
                     )
                 }
@@ -1573,7 +1576,7 @@ struct WelcomeView: View {
                 }
             }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -1759,6 +1762,8 @@ struct AddConditionsView: View {
                                 } else {
                                     selectedConditions.insert(condition)
                                 }
+                                print("💾 CONDITION SELECTED: \(condition)")
+                                print("💾 Current conditions: \(selectedConditions)")
                             }
                         )
                     }
@@ -1810,7 +1815,7 @@ struct AddConditionsView: View {
                 }
             }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -2042,7 +2047,7 @@ struct AddSymptomsView: View {
             }
         }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -2200,7 +2205,7 @@ struct FlareFrequencyView: View {
         }
             }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -2425,6 +2430,8 @@ struct DailyRoutinesView: View {
                                 } else {
                                     selectedRoutines.insert(routine.0)
                                 }
+                                print("💾 ROUTINE SELECTED: \(routine.0)")
+                                print("💾 Current routines: \(selectedRoutines)")
                             }
                         )
                     }
@@ -2527,14 +2534,14 @@ struct CompletionView: View {
             // Let's go button
             Button("Let's go!") {
                 withAnimation(.easeInOut(duration: 0.5)) {
-                    showOnboarding = false
+                    // Onboarding completion handled by OnboardingFlowView
                 }
             }
             .font(.system(size: 16, weight: .medium))
             .foregroundColor(.white)
             .padding(.horizontal, 40)
             .padding(.vertical, 16)
-            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
             .cornerRadius(12)
             .padding(.bottom, 40)
         }
@@ -3065,7 +3072,7 @@ struct FoodTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -3293,7 +3300,7 @@ struct MedicationTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         .sheet(isPresented: $showingAddMedication) {
             AddMedicationView(medications: $selectedMedications)
         }
@@ -3703,7 +3710,7 @@ struct RestTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         .sheet(isPresented: $showingSleepLog) {
             SleepLogView()
         }
@@ -4407,7 +4414,7 @@ struct TherapyTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         .sheet(isPresented: $showingTherapySession) {
             TherapySessionView()
         }
@@ -4775,7 +4782,7 @@ struct SymptomsTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         .sheet(isPresented: $showingAddSymptom) {
             AddSymptomView(symptoms: $selectedSymptoms, severities: $symptomSeverities)
         }

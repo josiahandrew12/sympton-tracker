@@ -246,7 +246,7 @@ struct HomeScreenView: View {
                     .padding(.bottom, 100) // Extra padding for tab bar
                 }
             }
-            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
+                .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         }
     }
 }

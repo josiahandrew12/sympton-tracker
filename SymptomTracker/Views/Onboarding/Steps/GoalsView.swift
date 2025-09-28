@@ -46,6 +46,7 @@ struct GoalsView: View {
                             } else {
                                 stateManager.selectedGoals.insert(goal.0)
                             }
+                            stateManager.saveOnboardingData()
                         }
                     )
                 }

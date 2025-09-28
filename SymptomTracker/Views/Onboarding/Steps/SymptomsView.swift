@@ -15,7 +15,7 @@ struct SymptomsView: View {
         ("Fatigue", "zzz", Color.orange),
         ("Pain", "bandage.fill", Color.red),
         ("Brain Fog", "brain.head.profile", Color.purple),
-        ("Nausea", "stomach.fill", Color.green),
+        ("Nausea", "heart.fill", Color.green),
         ("Headache", "bolt.fill", Color.yellow),
         ("Dizziness", "arrow.triangle.2.circlepath", Color.blue),
         ("Anxiety", "heart.fill", Color.pink),
@@ -55,9 +55,11 @@ struct SymptomsView: View {
                                 stateManager.selectedSymptoms.insert(symptom.0)
                                 symptomSeverities[symptom.0] = 5.0
                             }
+                            stateManager.saveOnboardingData()
                         },
                         onSeverityChange: { newValue in
                             symptomSeverities[symptom.0] = newValue
+                            stateManager.saveOnboardingData()
                         }
                     )
                 }
