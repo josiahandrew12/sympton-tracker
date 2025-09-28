@@ -25,11 +25,11 @@ struct TreatmentsView: View {
             VStack(spacing: 16) {
                 Text("Current Treatments")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("What treatments or supports are you currently using?")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }

@@ -19,7 +19,7 @@ struct QuickAddButton: View {
                 
                 Text(food.name)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }

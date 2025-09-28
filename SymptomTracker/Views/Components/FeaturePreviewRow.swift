@@ -28,11 +28,11 @@ struct FeaturePreviewRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text(description)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()
@@ -41,8 +41,8 @@ struct FeaturePreviewRow: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 2)
         )
     }
 }

@@ -34,11 +34,11 @@ struct SymptomCardWithScale: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(symptom)
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         Text("Symptom")
                             .font(.system(size: 14, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                     }
                     
                     Spacer()
@@ -59,8 +59,8 @@ struct SymptomCardWithScale: View {
                 .padding(.vertical, 16)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white)
-                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                        .fill(Color.gray.opacity(0.2))
+                        .shadow(color: .white.opacity(0.1), radius: 6, x: 0, y: 2)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
                                 .stroke(isSelected ? color : Color.clear, lineWidth: 2)
@@ -75,7 +75,7 @@ struct SymptomCardWithScale: View {
                     HStack {
                         Text("Severity")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         Spacer()
                         Text("\(Int(severity))/10")
                             .font(.system(size: 14, weight: .medium))
@@ -91,11 +91,11 @@ struct SymptomCardWithScale: View {
                     HStack {
                         Text("Mild")
                             .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                         Spacer()
                         Text("Severe")
                             .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                     }
                 }
                 .padding(16)

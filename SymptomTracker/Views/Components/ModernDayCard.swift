@@ -18,11 +18,11 @@ struct ModernDayCard: View {
         VStack(spacing: 10) {
             Text(dayNames[day])
                 .font(.system(size: 13, weight: .medium))
-                .foregroundColor(.secondary)
+                .foregroundColor(.white.opacity(0.7))
             
             Text(dayNumbers[day])
                 .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(isSelected ? .white : .primary)
+                .foregroundColor(isSelected ? .white : .white)
                 .frame(width: 44, height: 44)
                 .background(
                     Circle()

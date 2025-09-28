@@ -18,15 +18,15 @@ struct WelcomeView: View {
                 VStack(spacing: 16) {
                     Text("Welcome to")
                         .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                     
                     Text("SymptomTracker")
                         .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Text("AI-powered chronic illness tracking and health insights")
                         .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                 }
@@ -38,7 +38,7 @@ struct WelcomeView: View {
             VStack(spacing: 16) {
                 Text("What you'll get")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 VStack(spacing: 12) {
                     FeaturePreviewRow(

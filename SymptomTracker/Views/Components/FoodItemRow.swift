@@ -27,11 +27,11 @@ struct FoodItemRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(food.name)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("\(food.calories) calories")
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()

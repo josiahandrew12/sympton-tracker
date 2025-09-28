@@ -18,7 +18,7 @@ struct ModernReminderCard: View {
             // Status indicator
             ZStack {
                 Circle()
-                    .fill(isCompleted ? Color.green : Color(.systemGray5))
+                    .fill(isCompleted ? Color.green : Color.gray.opacity(0.3))
                     .frame(width: 12, height: 12)
                 
                 if isCompleted {
@@ -42,7 +42,7 @@ struct ModernReminderCard: View {
                 
                 Text(time)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()
@@ -50,12 +50,12 @@ struct ModernReminderCard: View {
             // Arrow
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.secondary)
+                .foregroundColor(.white.opacity(0.7))
         }
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(
                     color: Color.black.opacity(0.05),
                     radius: 8,
@@ -65,7 +65,7 @@ struct ModernReminderCard: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color(.systemGray5), lineWidth: 1)
+                .stroke(Color.white.opacity(0.2), lineWidth: 1)
         )
     }
 }

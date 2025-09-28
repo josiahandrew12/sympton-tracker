@@ -25,11 +25,11 @@ struct ConditionsView: View {
             VStack(spacing: 16) {
                 Text("Your Chronic Illness")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("Select any conditions you're managing")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -70,25 +70,25 @@ struct ConditionsView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Add another condition")
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                             
                             Text("Tap to add a custom condition")
                                 .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                         
                         Spacer()
                         
                         Image(systemName: "chevron.right")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white)
-                            .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                            .fill(Color.gray.opacity(0.2))
+                            .shadow(color: .white.opacity(0.1), radius: 6, x: 0, y: 2)
                     )
                 }
                 .buttonStyle(PlainButtonStyle())

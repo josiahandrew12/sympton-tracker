@@ -14,7 +14,7 @@ struct OnboardingFlowView: View {
         GeometryReader { geometry in
             ZStack {
                 // Background
-                Color(red: 0.98, green: 0.98, blue: 0.98)
+                Color.black
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
@@ -23,7 +23,7 @@ struct OnboardingFlowView: View {
                         HStack(spacing: 8) {
                             ForEach(0..<9, id: \.self) { step in
                                 Circle()
-                                    .fill(step <= stateManager.currentStep ? Color.blue : Color.gray.opacity(0.3))
+                                    .fill(step <= stateManager.currentStep ? Color.blue : Color.white.opacity(0.3))
                                     .frame(width: 10, height: 10)
                                     .scaleEffect(step == stateManager.currentStep ? 1.2 : 1.0)
                                     .animation(.easeInOut(duration: 0.3), value: stateManager.currentStep)
@@ -32,7 +32,7 @@ struct OnboardingFlowView: View {
                         
                         Text("Step \(stateManager.currentStep + 1) of 9")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                     }
                     .padding(.top, 60)
                     .padding(.bottom, 20)

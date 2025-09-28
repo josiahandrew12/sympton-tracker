@@ -81,7 +81,7 @@ struct OnboardingFlowView: View {
         GeometryReader { geometry in
             ZStack {
                 // Background
-                Color(red: 0.98, green: 0.98, blue: 0.98)
+                Color(red: 0.1, green: 0.1, blue: 0.1)
                     .ignoresSafeArea()
                 
         VStack(spacing: 0) {
@@ -90,7 +90,7 @@ struct OnboardingFlowView: View {
                 HStack(spacing: 8) {
                             ForEach(0..<9, id: \.self) { step in
                         Circle()
-                                    .fill(step <= currentStep ? Color.blue : Color.gray.opacity(0.3))
+                                    .fill(step <= currentStep ? Color.blue : Color.white.opacity(0.3))
                                     .frame(width: 10, height: 10)
                             .scaleEffect(step == currentStep ? 1.2 : 1.0)
                                     .animation(.easeInOut(duration: 0.3), value: currentStep)
@@ -99,7 +99,7 @@ struct OnboardingFlowView: View {
                         
                         Text("Step \(currentStep + 1) of 9")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                     }
                     .padding(.top, 60)
                     .padding(.bottom, 20)
@@ -212,15 +212,15 @@ struct NewWelcomeView: View {
                 VStack(spacing: 16) {
                     Text("Welcome to")
                         .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                     
                     Text("SymptomTracker")
                         .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Text("AI-powered chronic illness tracking and health insights")
                         .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                 }
@@ -232,7 +232,7 @@ struct NewWelcomeView: View {
             VStack(spacing: 16) {
                 Text("What you'll get")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 VStack(spacing: 12) {
                     FeaturePreviewRow(
@@ -286,11 +286,11 @@ struct FeaturePreviewRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text(description)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()
@@ -299,7 +299,7 @@ struct FeaturePreviewRow: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
         )
     }
@@ -316,11 +316,11 @@ struct NewProfileSetupView: View {
             VStack(spacing: 16) {
                 Text("What's your name?")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("We'll personalize your experience")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             .padding(.horizontal, 24)
             
@@ -332,7 +332,7 @@ struct NewProfileSetupView: View {
                 .padding(.vertical, 16)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.1))
+                        .fill(Color.gray.opacity(0.3))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(isTextFieldFocused ? Color.blue : Color.clear, lineWidth: 2)
@@ -366,11 +366,11 @@ struct BenefitRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text(description)
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()
@@ -397,11 +397,11 @@ struct NewConditionsView: View {
             VStack(spacing: 16) {
                 Text("Your Chronic Illness")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("Select any conditions you're managing")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
             }
@@ -442,25 +442,25 @@ struct NewConditionsView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Add another condition")
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                             
                             Text("Tap to add a custom condition")
                                 .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                         
                             Spacer()
                             
                         Image(systemName: "chevron.right")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
             }
             .padding(.horizontal, 20)
                     .padding(.vertical, 16)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white)
-                            .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                            .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -495,12 +495,12 @@ struct ConditionCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(condition)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.leading)
                     
                     Text("Health condition")
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                                 }
                                 
                                 Spacer()
@@ -521,8 +521,8 @@ struct ConditionCard: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
@@ -556,11 +556,11 @@ struct NewSymptomsView: View {
             VStack(spacing: 16) {
                 Text("Track Your Symptoms")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("Select symptoms you experience regularly")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
             }
@@ -621,11 +621,11 @@ struct SymptomCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(symptom)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Text("Symptom")
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 
                             Spacer()
@@ -646,8 +646,8 @@ struct SymptomCard: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? color : Color.clear, lineWidth: 2)
@@ -686,11 +686,11 @@ struct SymptomCardWithScale: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(symptom)
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         Text("Symptom")
                             .font(.system(size: 14, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                     }
                     
                     Spacer()
@@ -711,8 +711,8 @@ struct SymptomCardWithScale: View {
                 .padding(.vertical, 16)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white)
-                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                        .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                        .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
                                 .stroke(isSelected ? color : Color.clear, lineWidth: 2)
@@ -727,7 +727,7 @@ struct SymptomCardWithScale: View {
                             HStack {
                         Text("Severity")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         Spacer()
                         Text("\(Int(severity))/10")
                             .font(.system(size: 14, weight: .medium))
@@ -743,11 +743,11 @@ struct SymptomCardWithScale: View {
                     HStack {
                         Text("Mild")
                             .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                         Spacer()
                         Text("Severe")
                             .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                     }
                 }
                 .padding(16)
@@ -780,11 +780,11 @@ struct FlarePatternView: View {
             VStack(spacing: 16) {
                 Text("Flare Patterns")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("How do your symptoms typically behave?")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -835,11 +835,11 @@ struct FlarePatternCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Text(description)
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 
                 Spacer()
@@ -860,8 +860,8 @@ struct FlarePatternCard: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
@@ -891,11 +891,11 @@ struct TreatmentsView: View {
             VStack(spacing: 16) {
                 Text("Current Treatments")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("What treatments or supports are you currently using?")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -947,7 +947,7 @@ struct TreatmentCard: View {
                 
                 Text(treatment)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
@@ -967,8 +967,8 @@ struct TreatmentCard: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? Color.green : Color.clear, lineWidth: 2)
@@ -1007,11 +1007,11 @@ struct TriggersView: View {
             VStack(spacing: 16) {
                 Text("Triggers & Routines")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("What would you like to track for insights?")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -1021,7 +1021,7 @@ struct TriggersView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Triggers to Track")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 VStack(spacing: 12) {
                     ForEach(triggers, id: \.0) { trigger in
@@ -1047,7 +1047,7 @@ struct TriggersView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Things You Want to Track")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 VStack(spacing: 12) {
                     ForEach(routines, id: \.0) { routine in
@@ -1096,7 +1096,7 @@ struct TriggerCard: View {
                 
                 Text(trigger)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                 
                 if isSelected {
@@ -1108,7 +1108,7 @@ struct TriggerCard: View {
             .padding(12)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                                            .fill(Color.white)
+                                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                     .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
                                             .overlay(
                         RoundedRectangle(cornerRadius: 12)
@@ -1144,11 +1144,11 @@ struct TriggerCardFullWidth: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(trigger)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Text("Trigger")
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                                     }
                                     
                                     Spacer()
@@ -1169,8 +1169,8 @@ struct TriggerCardFullWidth: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                                            .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                                             .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? color : Color.clear, lineWidth: 2)
@@ -1203,7 +1203,7 @@ struct RoutineCard: View {
                 
                 Text(routine)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
@@ -1223,8 +1223,8 @@ struct RoutineCard: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
@@ -1253,11 +1253,11 @@ struct GoalsView: View {
             VStack(spacing: 16) {
                 Text("Your Goals")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("What do you want most from this app?")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -1315,7 +1315,7 @@ struct GoalCard: View {
                 
                 Text(goal)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
@@ -1335,8 +1335,8 @@ struct GoalCard: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? Color.purple : Color.clear, lineWidth: 2)
@@ -1374,11 +1374,11 @@ struct NewCompletionView: View {
                 VStack(spacing: 16) {
                     Text("You're All Set!")
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Text("Your personalized health tracking experience is ready")
                         .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                 }
@@ -1390,7 +1390,7 @@ struct NewCompletionView: View {
             VStack(spacing: 20) {
                 Text("What's Next?")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 VStack(spacing: 16) {
                     NextStepRow(
@@ -1418,7 +1418,7 @@ struct NewCompletionView: View {
             .padding(24)
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.white)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                     .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
             )
             .padding(.horizontal, 24)
@@ -1450,11 +1450,11 @@ struct NextStepRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text(description)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                 }
                 
                 Spacer()
@@ -1511,19 +1511,19 @@ struct WelcomeView: View {
                         VStack(spacing: 12) {
                     Text("Welcome to")
                                 .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                     
                     Text("your personal")
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Text("health tracker")
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                             
                             Text("Let's set up your personalized health tracking experience")
                                 .font(.system(size: 16, weight: .regular))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 20)
                         }
@@ -1531,7 +1531,7 @@ struct WelcomeView: View {
                     .padding(32)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.white)
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                     )
                     .padding(.horizontal, 24)
@@ -1541,7 +1541,7 @@ struct WelcomeView: View {
                     VStack(spacing: 16) {
                         Text("What you'll get")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 12) {
@@ -1573,7 +1573,7 @@ struct WelcomeView: View {
                 }
             }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -1599,11 +1599,11 @@ struct FeatureRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                 
                 Text(description)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                 }
                 
                 Spacer()
@@ -1612,7 +1612,7 @@ struct FeatureRow: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
         )
     }
@@ -1632,7 +1632,7 @@ struct WhoAreYouView: View {
                 VStack(spacing: 20) {
                     Text("Let's get to know you")
                         .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                     
                     Text("Personalizing your health journey starts with your name")
@@ -1735,13 +1735,13 @@ struct AddConditionsView: View {
                     
                     Text("Help us understand your health profile")
                             .font(.system(size: 14, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                             .padding(.horizontal, 20)
                             .padding(.bottom, 16)
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.white)
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                     )
                     .padding(.horizontal, 24)
@@ -1781,25 +1781,25 @@ struct AddConditionsView: View {
                                 VStack(alignment: .leading, spacing: 4) {
                             Text("Add another condition")
                                         .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                                     
                                     Text("Tap to add a custom condition")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             
                             Spacer()
                                 
                                 Image(systemName: "chevron.right")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                         }
                             .padding(.horizontal, 20)
                         .padding(.vertical, 16)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.white)
-                                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -1810,7 +1810,7 @@ struct AddConditionsView: View {
                 }
             }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -1837,12 +1837,12 @@ struct ModernConditionCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                 Text(condition)
                         .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                     
                     Text("Health condition")
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 
                 Spacer()
@@ -1864,8 +1864,8 @@ struct ModernConditionCard: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
@@ -1929,13 +1929,13 @@ struct AddSymptomsView: View {
                     
                     Text("Select symptoms you experience regularly")
                             .font(.system(size: 14, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                             .padding(.horizontal, 20)
                             .padding(.bottom, 16)
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.white)
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                     )
                     .padding(.horizontal, 24)
@@ -1945,7 +1945,7 @@ struct AddSymptomsView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "magnifyingglass")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                     
                     TextField("Search symptoms...", text: $searchText)
                         .font(.system(size: 16, weight: .regular))
@@ -1955,8 +1955,8 @@ struct AddSymptomsView: View {
                 .padding(.vertical, 16)
                 .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white)
-                            .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                            .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
@@ -1968,7 +1968,7 @@ struct AddSymptomsView: View {
                             HStack {
                         Text("Vision & Eye")
                                     .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                                 
                                 Spacer()
                             }
@@ -2005,7 +2005,7 @@ struct AddSymptomsView: View {
                             HStack {
                         Text("Skin & Dermatological")
                                     .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                                 
                                 Spacer()
                             }
@@ -2042,7 +2042,7 @@ struct AddSymptomsView: View {
             }
         }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -2072,7 +2072,7 @@ struct ModernSymptomCard: View {
                     
                     Text(symptom)
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.leading)
                     
                     Spacer()
@@ -2102,7 +2102,7 @@ struct ModernSymptomCard: View {
                         
                         Text("\(Int(severity))/10")
                             .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                     }
                     
                     Slider(value: $severity, in: 0...10, step: 1)
@@ -2170,13 +2170,13 @@ struct FlareFrequencyView: View {
                     
                     Text("How often do your symptoms flare up?")
                             .font(.system(size: 14, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                             .padding(.horizontal, 20)
                             .padding(.bottom, 16)
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.white)
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                     )
                     .padding(.horizontal, 24)
@@ -2200,7 +2200,7 @@ struct FlareFrequencyView: View {
         }
             }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -2247,11 +2247,11 @@ struct ModernFrequencyCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                 Text(frequency)
                         .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                     Text("Symptom frequency")
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 
             Spacer()
@@ -2273,8 +2273,8 @@ struct ModernFrequencyCard: View {
                 .padding(.vertical, 16)
                 .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                         .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(isSelected ? frequencyColor : Color.clear, lineWidth: 2)
@@ -2310,7 +2310,7 @@ struct ModernTriggerCard: View {
                 
                 Text(trigger)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                 
                 Spacer()
@@ -2344,12 +2344,12 @@ struct ModernGoalCard: View {
                 // Icon
                 Image(systemName: icon)
                     .font(.system(size: 20, weight: .light))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .frame(width: 24, height: 24)
                 
                 Text(goal)
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                 
                 Spacer()
@@ -2402,7 +2402,7 @@ struct DailyRoutinesView: View {
                 VStack(spacing: 20) {
                     Text("Daily routines")
                         .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                     
                     Text("Track your daily habits and activities")
@@ -2450,12 +2450,12 @@ struct ModernRoutineCard: View {
                 // Icon
                 Image(systemName: icon)
                     .font(.system(size: 20, weight: .light))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .frame(width: 24, height: 24)
                 
                 Text(routine)
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
@@ -2504,14 +2504,14 @@ struct CompletionView: View {
                     
                     Image(systemName: "checkmark")
                         .font(.system(size: 48, weight: .thin))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                 }
                 
                 // Content
                 VStack(spacing: 16) {
                     Text("You're all set!")
                         .font(.system(size: 32, weight: .thin))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                     
                     Text("Your personalized health tracking journey begins now")
@@ -2534,7 +2534,7 @@ struct CompletionView: View {
             .foregroundColor(.white)
             .padding(.horizontal, 40)
             .padding(.vertical, 16)
-            .background(Color.black)
+            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
             .cornerRadius(12)
             .padding(.bottom, 40)
         }
@@ -2603,7 +2603,7 @@ struct HomeScreenView: View {
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(.systemBackground))
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                             .shadow(
                                 color: Color.black.opacity(0.05),
                                 radius: 8,
@@ -2613,7 +2613,7 @@ struct HomeScreenView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color(.systemGray5), lineWidth: 1)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
@@ -2658,7 +2658,7 @@ struct HomeScreenView: View {
                         .padding(16)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.white)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                                 .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
                         )
                         
@@ -2728,7 +2728,7 @@ struct HomeScreenView: View {
                         .padding(16)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.white)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                                 .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
                         )
                     }
@@ -2861,8 +2861,8 @@ struct HomeScreenView: View {
         .background(
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(.systemBackground),
-                    Color(.systemGray6).opacity(0.3)
+                    Color(red: 0.15, green: 0.15, blue: 0.15),
+                    Color.gray.opacity(0.3)
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
@@ -2928,14 +2928,14 @@ struct FoodTrackingView: View {
                         }) {
                             Image(systemName: "arrow.left")
                                 .font(.system(size: 20, weight: .medium))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                         }
                         
                         Spacer()
                         
                         Text("Track Food")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         Spacer()
                         
@@ -2944,7 +2944,7 @@ struct FoodTrackingView: View {
                         }) {
                             Image(systemName: "person.circle.fill")
                                 .font(.system(size: 24))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                     }
                     .padding(.horizontal, 24)
@@ -2955,17 +2955,17 @@ struct FoodTrackingView: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                         
                         TextField("Search foods...", text: $searchText)
                             .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.1))
+                            .fill(Color.gray.opacity(0.3))
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
@@ -2998,7 +2998,7 @@ struct FoodTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Quick Add")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         HStack(spacing: 12) {
@@ -3031,7 +3031,7 @@ struct FoodTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Recent")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         LazyVStack(spacing: 12) {
@@ -3049,7 +3049,7 @@ struct FoodTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Popular")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         LazyVStack(spacing: 12) {
@@ -3065,7 +3065,7 @@ struct FoodTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
     }
 }
 
@@ -3131,11 +3131,11 @@ struct FoodItemRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(food.name)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("\(food.calories) calories")
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()
@@ -3155,7 +3155,7 @@ struct FoodItemRow: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
         )
     }
@@ -3187,14 +3187,14 @@ struct MedicationTrackingView: View {
                         }) {
                             Image(systemName: "arrow.left")
                                 .font(.system(size: 20, weight: .medium))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                         }
                         
                         Spacer()
                         
                         Text("Track Medications")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         Spacer()
                         
@@ -3214,17 +3214,17 @@ struct MedicationTrackingView: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                         
                         TextField("Search medications...", text: $searchText)
                             .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.1))
+                            .fill(Color.gray.opacity(0.3))
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
@@ -3233,7 +3233,7 @@ struct MedicationTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Today's Medications")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         if selectedMedications.isEmpty {
@@ -3244,11 +3244,11 @@ struct MedicationTrackingView: View {
                                 
                                 Text("No medications logged today")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white)
                                 
                                 Text("Add your medications to track them")
                                     .font(.system(size: 14, weight: .regular))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                     .multilineTextAlignment(.center)
                             }
                             .frame(maxWidth: .infinity)
@@ -3272,7 +3272,7 @@ struct MedicationTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Common Medications")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         LazyVStack(spacing: 12) {
@@ -3293,7 +3293,7 @@ struct MedicationTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         .sheet(isPresented: $showingAddMedication) {
             AddMedicationView(medications: $selectedMedications)
         }
@@ -3332,11 +3332,11 @@ struct MedicationItemRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(medication.name)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("\(medication.dosage) • \(medication.frequency)")
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()
@@ -3353,7 +3353,7 @@ struct MedicationItemRow: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
         )
     }
@@ -3379,11 +3379,11 @@ struct MedicationAddRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(medication.name)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("\(medication.dosage) • \(medication.frequency)")
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()
@@ -3400,7 +3400,7 @@ struct MedicationAddRow: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
         )
     }
@@ -3422,7 +3422,7 @@ struct AddMedicationView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Medication Name")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     TextField("Enter medication name", text: $medicationName)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -3431,7 +3431,7 @@ struct AddMedicationView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Dosage")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     TextField("e.g., 200mg, 1 tablet", text: $dosage)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -3440,7 +3440,7 @@ struct AddMedicationView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Frequency")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Picker("Frequency", selection: $frequency) {
                         ForEach(frequencies, id: \.self) { freq in
@@ -3520,14 +3520,14 @@ struct RestTrackingView: View {
                         }) {
                             Image(systemName: "arrow.left")
                                 .font(.system(size: 20, weight: .medium))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                         }
                         
                         Spacer()
                         
                         Text("Track Rest")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         Spacer()
                         
@@ -3549,11 +3549,11 @@ struct RestTrackingView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Last Night's Sleep")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                 
                                 Text("\(String(format: "%.1f", sleepHours)) hours")
                                     .font(.system(size: 28, weight: .bold))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                             }
                             
                             Spacer()
@@ -3561,7 +3561,7 @@ struct RestTrackingView: View {
                             VStack(alignment: .trailing, spacing: 4) {
                                 Text("Quality")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                 
                                 Text(qualityOptions[sleepQuality - 1].1)
                                     .font(.system(size: 18, weight: .bold))
@@ -3573,7 +3573,7 @@ struct RestTrackingView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Sleep Quality")
                                 .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                             
                             HStack {
                                 ForEach(qualityOptions, id: \.0) { option in
@@ -3597,7 +3597,7 @@ struct RestTrackingView: View {
                     .padding(24)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.white)
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                     )
                     .padding(.horizontal, 24)
@@ -3607,14 +3607,14 @@ struct RestTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Sleep Duration")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 16) {
                             HStack {
                                 Text("Hours of Sleep")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                 
                                 Spacer()
                                 
@@ -3629,8 +3629,8 @@ struct RestTrackingView: View {
                         .padding(20)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                         )
                         .padding(.horizontal, 24)
                     }
@@ -3640,7 +3640,7 @@ struct RestTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Sleep Schedule")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 16) {
@@ -3648,7 +3648,7 @@ struct RestTrackingView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Bedtime")
                                         .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                     
                                     DatePicker("", selection: $bedTime, displayedComponents: .hourAndMinute)
                                         .datePickerStyle(CompactDatePickerStyle())
@@ -3660,7 +3660,7 @@ struct RestTrackingView: View {
                                 VStack(alignment: .trailing, spacing: 8) {
                                     Text("Wake Time")
                                         .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                     
                                     DatePicker("", selection: $wakeTime, displayedComponents: .hourAndMinute)
                                         .datePickerStyle(CompactDatePickerStyle())
@@ -3671,8 +3671,8 @@ struct RestTrackingView: View {
                         .padding(20)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                         )
                         .padding(.horizontal, 24)
                     }
@@ -3682,7 +3682,7 @@ struct RestTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Sleep Tips")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 12) {
@@ -3694,8 +3694,8 @@ struct RestTrackingView: View {
                         .padding(20)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                         )
                         .padding(.horizontal, 24)
                     }
@@ -3703,7 +3703,7 @@ struct RestTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         .sheet(isPresented: $showingSleepLog) {
             SleepLogView()
         }
@@ -3724,7 +3724,7 @@ struct SleepTipRow: View {
             
             Text(tip)
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(.black)
+                .foregroundColor(.white)
             
             Spacer()
         }
@@ -3742,7 +3742,7 @@ struct SleepLogView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Sleep Notes")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     TextField("How did you sleep? Any dreams or disturbances?", text: $sleepNotes, axis: .vertical)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -3870,14 +3870,14 @@ struct TherapyTrackingView: View {
                         }) {
                             Image(systemName: "arrow.left")
                                 .font(.system(size: 20, weight: .medium))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                         }
                         
                         Spacer()
                         
                         Text("Track Therapy")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         Spacer()
                         
@@ -3897,7 +3897,7 @@ struct TherapyTrackingView: View {
                     VStack(spacing: 16) {
                         Text("Therapy Type")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         HStack(spacing: 12) {
@@ -3911,7 +3911,7 @@ struct TherapyTrackingView: View {
                                         
                                         Text(type.rawValue)
                                             .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.black)
+                                            .foregroundColor(.white)
                                     }
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 16)
@@ -3938,7 +3938,7 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Current Mood")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                 
                                 HStack(spacing: 8) {
                                     Text(moodOptions[moodRating - 1].1)
@@ -3955,7 +3955,7 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .trailing, spacing: 8) {
                                 Text("Stress Level")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                 
                                 Text(stressOptions[stressLevel - 1].1)
                                     .font(.system(size: 18, weight: .bold))
@@ -3969,7 +3969,7 @@ struct TherapyTrackingView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Pain Level")
                                         .font(.system(size: 16, weight: .medium))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                     
                                     HStack(spacing: 8) {
                                         Text("🩹")
@@ -3986,7 +3986,7 @@ struct TherapyTrackingView: View {
                                 VStack(alignment: .trailing, spacing: 8) {
                                     Text("Flexibility")
                                         .font(.system(size: 16, weight: .medium))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                     
                                     Text(levelOptions[flexibilityLevel - 1].1)
                                         .font(.system(size: 18, weight: .bold))
@@ -4000,7 +4000,7 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Session Duration")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                 
                                 Text("\(sessionDuration) minutes")
                                     .font(.system(size: 18, weight: .bold))
@@ -4012,7 +4012,7 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .trailing, spacing: 8) {
                                 Text("Therapist")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                 
                                 Text(therapistName.isEmpty ? "Not specified" : therapistName)
                                     .font(.system(size: 18, weight: .bold))
@@ -4023,7 +4023,7 @@ struct TherapyTrackingView: View {
                     .padding(24)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.white)
+                            .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                             .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
                     )
                     .padding(.horizontal, 24)
@@ -4034,7 +4034,7 @@ struct TherapyTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("How are you feeling?")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         HStack(spacing: 12) {
@@ -4057,8 +4057,8 @@ struct TherapyTrackingView: View {
                         .padding(20)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                         )
                         .padding(.horizontal, 24)
                     }
@@ -4070,14 +4070,14 @@ struct TherapyTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Stress Level")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 16) {
                             HStack {
                                 Text("Current Stress")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                 
                                 Spacer()
                                 
@@ -4107,8 +4107,8 @@ struct TherapyTrackingView: View {
                             .padding(20)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.white)
-                                    .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                    .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                             )
                             .padding(.horizontal, 24)
                         }
@@ -4122,14 +4122,14 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .leading, spacing: 16) {
                                 Text("Pain Level")
                                     .font(.system(size: 18, weight: .bold))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                     .padding(.horizontal, 24)
                                 
                                 VStack(spacing: 16) {
                                     HStack {
                                         Text("Current Pain")
                                             .font(.system(size: 16, weight: .medium))
-                                            .foregroundColor(.black)
+                                            .foregroundColor(.white)
                                         
                                         Spacer()
                                         
@@ -4159,8 +4159,8 @@ struct TherapyTrackingView: View {
                                 .padding(20)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.white)
-                                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                        .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                        .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                                 )
                                 .padding(.horizontal, 24)
                             }
@@ -4169,14 +4169,14 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .leading, spacing: 16) {
                                 Text("Flexibility Level")
                                     .font(.system(size: 18, weight: .bold))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                     .padding(.horizontal, 24)
                                 
                                 VStack(spacing: 16) {
                                     HStack {
                                         Text("Current Flexibility")
                                             .font(.system(size: 16, weight: .medium))
-                                            .foregroundColor(.black)
+                                            .foregroundColor(.white)
                                         
                                         Spacer()
                                         
@@ -4206,8 +4206,8 @@ struct TherapyTrackingView: View {
                                 .padding(20)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.white)
-                                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                        .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                        .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                                 )
                                 .padding(.horizontal, 24)
                             }
@@ -4216,14 +4216,14 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .leading, spacing: 16) {
                                 Text("Strength Level")
                                     .font(.system(size: 18, weight: .bold))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                     .padding(.horizontal, 24)
                                 
                                 VStack(spacing: 16) {
                                     HStack {
                                         Text("Current Strength")
                                             .font(.system(size: 16, weight: .medium))
-                                            .foregroundColor(.black)
+                                            .foregroundColor(.white)
                                         
                                         Spacer()
                                         
@@ -4253,8 +4253,8 @@ struct TherapyTrackingView: View {
                                 .padding(20)
                                 .background(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .fill(Color.white)
-                                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                        .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                        .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                                 )
                                 .padding(.horizontal, 24)
                             }
@@ -4266,7 +4266,7 @@ struct TherapyTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Session Details")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 16) {
@@ -4274,7 +4274,7 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Session Duration")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                 
                                 HStack {
                                     Text("\(sessionDuration) minutes")
@@ -4311,7 +4311,7 @@ struct TherapyTrackingView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Therapist Name")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                 
                                 TextField("Enter therapist name", text: $therapistName)
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -4320,8 +4320,8 @@ struct TherapyTrackingView: View {
                         .padding(20)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                         )
                         .padding(.horizontal, 24)
                     }
@@ -4331,7 +4331,7 @@ struct TherapyTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Therapy Activities")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         LazyVGrid(columns: [
@@ -4377,7 +4377,7 @@ struct TherapyTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("\(selectedTherapyType.rawValue) Tips")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         VStack(spacing: 12) {
@@ -4398,8 +4398,8 @@ struct TherapyTrackingView: View {
                         .padding(20)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.white)
-                                .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 2)
                         )
                         .padding(.horizontal, 24)
                     }
@@ -4407,7 +4407,7 @@ struct TherapyTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         .sheet(isPresented: $showingTherapySession) {
             TherapySessionView()
         }
@@ -4429,7 +4429,7 @@ struct TherapyTipRow: View {
             
             Text(tip)
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(.black)
+                .foregroundColor(.white)
             
             Spacer()
         }
@@ -4478,7 +4478,7 @@ struct TherapySessionView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Therapy Type")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         HStack(spacing: 12) {
                             ForEach(TherapyType.allCases, id: \.self) { type in
@@ -4491,7 +4491,7 @@ struct TherapySessionView: View {
                                         
                                         Text(type.rawValue)
                                             .font(.system(size: 10, weight: .medium))
-                                            .foregroundColor(.black)
+                                            .foregroundColor(.white)
                                     }
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 12)
@@ -4513,7 +4513,7 @@ struct TherapySessionView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Session Type")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Picker("Session Type", selection: $sessionType) {
                         ForEach(sessionTypes, id: \.self) { type in
@@ -4527,7 +4527,7 @@ struct TherapySessionView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Therapist Name")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         TextField("Enter therapist name", text: $therapistName)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -4537,7 +4537,7 @@ struct TherapySessionView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Session Duration")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         HStack {
                             Text("\(sessionDuration) minutes")
@@ -4578,7 +4578,7 @@ struct TherapySessionView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Session Goals")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         TextField("What do you hope to achieve in this session?", text: $sessionGoals, axis: .vertical)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -4589,7 +4589,7 @@ struct TherapySessionView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Session Notes")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     TextField("How did the session go? What did you discuss?", text: $sessionNotes, axis: .vertical)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -4652,14 +4652,14 @@ struct SymptomsTrackingView: View {
                         }) {
                             Image(systemName: "arrow.left")
                                 .font(.system(size: 20, weight: .medium))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                         }
                         
                         Spacer()
                         
                         Text("Track Symptoms")
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         Spacer()
                         
@@ -4679,17 +4679,17 @@ struct SymptomsTrackingView: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                         
                         TextField("Search symptoms...", text: $searchText)
                             .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.gray.opacity(0.1))
+                            .fill(Color.gray.opacity(0.3))
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
@@ -4698,7 +4698,7 @@ struct SymptomsTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Today's Symptoms")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         if selectedSymptoms.isEmpty {
@@ -4709,11 +4709,11 @@ struct SymptomsTrackingView: View {
                                 
                                 Text("No symptoms logged today")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                 
                                 Text("Add your symptoms to track them")
                                     .font(.system(size: 14, weight: .regular))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.7))
                                     .multilineTextAlignment(.center)
                             }
                             .frame(maxWidth: .infinity)
@@ -4745,7 +4745,7 @@ struct SymptomsTrackingView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Common Symptoms")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .padding(.horizontal, 24)
                         
                         LazyVGrid(columns: [
@@ -4775,7 +4775,7 @@ struct SymptomsTrackingView: View {
                 }
             }
         }
-        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+        .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         .sheet(isPresented: $showingAddSymptom) {
             AddSymptomView(symptoms: $selectedSymptoms, severities: $symptomSeverities)
         }
@@ -4814,11 +4814,11 @@ struct SymptomTrackingRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(symptom.name)
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Text(symptom.category)
                         .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 
                 Spacer()
@@ -4827,7 +4827,7 @@ struct SymptomTrackingRow: View {
                 Button(action: onRemove) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 24))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 .buttonStyle(PlainButtonStyle())
             }
@@ -4837,7 +4837,7 @@ struct SymptomTrackingRow: View {
                 HStack {
                     Text("Severity")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Spacer()
                     
@@ -4854,7 +4854,7 @@ struct SymptomTrackingRow: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
         )
     }
@@ -4889,12 +4889,12 @@ struct SymptomAddCard: View {
             VStack(spacing: 4) {
                 Text(symptom.name)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                 
                 Text(symptom.category)
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             
             if isSelected {
@@ -4907,7 +4907,7 @@ struct SymptomAddCard: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(isSelected ? symptom.color.opacity(0.1) : Color.white)
+                .fill(isSelected ? symptom.color.opacity(0.1) : Color(red: 0.15, green: 0.15, blue: 0.15))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(isSelected ? symptom.color : Color.clear, lineWidth: 2)
@@ -4934,7 +4934,7 @@ struct AddSymptomView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Symptom Name")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     TextField("Enter symptom name", text: $symptomName)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -4943,7 +4943,7 @@ struct AddSymptomView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Category")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                     
                     Picker("Category", selection: $category) {
                         ForEach(categories, id: \.self) { cat in
@@ -4963,7 +4963,7 @@ struct AddSymptomView: View {
                     HStack {
                         Text("Initial Severity")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                         
                         Spacer()
                         
@@ -5049,7 +5049,7 @@ struct ModernActionCard: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(
                     color: Color.black.opacity(0.05),
                     radius: 8,
@@ -5059,7 +5059,7 @@ struct ModernActionCard: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color(.systemGray5), lineWidth: 1)
+                .stroke(Color.white.opacity(0.2), lineWidth: 1)
         )
     }
 }
@@ -5076,7 +5076,7 @@ struct ModernReminderCard: View {
             // Status indicator
             ZStack {
                 Circle()
-                    .fill(isCompleted ? Color.green : Color(.systemGray5))
+                    .fill(isCompleted ? Color.green : Color.gray.opacity(0.3))
                     .frame(width: 12, height: 12)
                 
                 if isCompleted {
@@ -5113,7 +5113,7 @@ struct ModernReminderCard: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(
                     color: Color.black.opacity(0.05),
                     radius: 8,
@@ -5123,7 +5123,7 @@ struct ModernReminderCard: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color(.systemGray5), lineWidth: 1)
+                .stroke(Color.white.opacity(0.2), lineWidth: 1)
         )
     }
 }
@@ -5156,11 +5156,11 @@ struct OnboardingSummaryView: View {
             VStack(spacing: 16) {
                 Text("Review Your Setup")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("Let's make sure everything looks good")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -5178,7 +5178,7 @@ struct OnboardingSummaryView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Name: \(userName.isEmpty ? "Not provided" : userName)")
                                 .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                     }
                     
@@ -5193,7 +5193,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(selectedConditions), id: \.self) { condition in
                                     Text("• \(condition)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -5210,7 +5210,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(selectedSymptoms), id: \.self) { symptom in
                                     Text("• \(symptom)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -5225,7 +5225,7 @@ struct OnboardingSummaryView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("• \(flareFrequency.isEmpty ? "Not selected" : flareFrequency)")
                                 .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                     }
                     
@@ -5240,7 +5240,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(selectedTriggers), id: \.self) { trigger in
                                     Text("• \(trigger)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -5257,7 +5257,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(selectedRoutines), id: \.self) { routine in
                                     Text("• \(routine)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -5274,7 +5274,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(selectedGoals), id: \.self) { goal in
                                     Text("• \(goal)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -5310,7 +5310,7 @@ struct SummarySection<Content: View>: View {
                 
                 Text(title)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Spacer()
             }
@@ -5320,7 +5320,7 @@ struct SummarySection<Content: View>: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
+                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                 .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
         )
     }

@@ -37,13 +37,13 @@ struct ModernActionCard: View {
                 VStack(spacing: 4) {
                     Text(title)
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
                     
                     Text(subtitle)
                         .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
                 }
@@ -52,9 +52,9 @@ struct ModernActionCard: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.systemBackground))
+                    .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
                     .shadow(
-                        color: Color.black.opacity(0.05),
+                        color: .black.opacity(0.3),
                         radius: 8,
                         x: 0,
                         y: 2
@@ -62,7 +62,7 @@ struct ModernActionCard: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color(.systemGray5), lineWidth: 1)
+                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
             )
         }
         .buttonStyle(PlainButtonStyle())

@@ -46,7 +46,7 @@ struct HomeScreenView: View {
                             
                             Text("This Week")
                                 .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.white)
                             
                             Spacer()
                         }
@@ -67,9 +67,9 @@ struct HomeScreenView: View {
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(.systemBackground))
+                            .fill(Color.gray.opacity(0.2))
                             .shadow(
-                                color: Color.black.opacity(0.05),
+                                color: .white.opacity(0.1),
                                 radius: 8,
                                 x: 0,
                                 y: 2
@@ -77,7 +77,7 @@ struct HomeScreenView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color(.systemGray5), lineWidth: 1)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
@@ -111,21 +111,21 @@ struct HomeScreenView: View {
                             
                             Text("Flare Risk")
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.white)
                             
                             Text("Based on recent patterns")
                                 .font(.system(size: 12, weight: .regular))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                         .padding(16)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemBackground))
-                                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 1)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 1)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(.systemGray5), lineWidth: 1)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
                         )
                         
                         // Symptoms Card
@@ -149,21 +149,21 @@ struct HomeScreenView: View {
                             
                             Text("Active Symptoms")
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.white)
                             
                             Text("Tracked today")
                                 .font(.system(size: 12, weight: .regular))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                         .padding(16)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemBackground))
-                                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 1)
+                                .fill(Color(red: 0.15, green: 0.15, blue: 0.15))
+                                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 1)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(.systemGray5), lineWidth: 1)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
                         )
                     }
                     .padding(.horizontal, 24)
@@ -174,7 +174,7 @@ struct HomeScreenView: View {
                         HStack {
                             Text("Quick Actions")
                                 .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.white)
                             
                             Spacer()
                         }
@@ -220,7 +220,7 @@ struct HomeScreenView: View {
                         HStack {
                             Text("Reminders")
                                 .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.white)
                             
                             Spacer()
                         }
@@ -246,7 +246,7 @@ struct HomeScreenView: View {
                     .padding(.bottom, 100) // Extra padding for tab bar
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color(red: 0.1, green: 0.1, blue: 0.1))
         }
     }
 }

@@ -20,14 +20,14 @@ struct MedicationTrackingView: View {
                     }) {
                         Image(systemName: "arrow.left")
                             .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.white)
                     }
                     
                     Spacer()
                     
                     Text("Medication Tracking")
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                     
                     Spacer()
                     
@@ -36,7 +36,7 @@ struct MedicationTrackingView: View {
                     }) {
                         Image(systemName: "plus")
                             .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.blue)
+                            .foregroundColor(.white)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -47,17 +47,17 @@ struct MedicationTrackingView: View {
                 
                 Text("Medication Tracking")
                     .font(.title)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.white)
                 
                 Text("Track your medications and dosages")
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                 
                 Spacer()
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color.black)
         }
     }
 }

@@ -20,14 +20,14 @@ struct RestTrackingView: View {
                     }) {
                         Image(systemName: "arrow.left")
                             .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.white)
                     }
                     
                     Spacer()
                     
                     Text("Rest Tracking")
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                     
                     Spacer()
                 }
@@ -39,17 +39,17 @@ struct RestTrackingView: View {
                 
                 Text("Rest Tracking")
                     .font(.title)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.white)
                 
                 Text("Monitor your sleep and rest patterns")
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                 
                 Spacer()
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color.black)
         }
     }
 }

@@ -34,14 +34,14 @@ struct FoodTrackingView: View {
                         }) {
                             Image(systemName: "arrow.left")
                                 .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.white)
                         }
                         
                         Spacer()
                         
                         Text("Food Tracking")
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.white)
                         
                         Spacer()
                         
@@ -50,7 +50,7 @@ struct FoodTrackingView: View {
                         }) {
                             Image(systemName: "plus")
                                 .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.blue)
+                                .foregroundColor(.white)
                         }
                     }
                     .padding(.horizontal, 24)
@@ -60,16 +60,17 @@ struct FoodTrackingView: View {
                     // Search Bar
                     HStack {
                         Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.7))
                         
                         TextField("Search foods...", text: $searchText)
                             .textFieldStyle(PlainTextFieldStyle())
+                            .foregroundColor(.white)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(.systemGray6))
+                            .fill(Color.gray.opacity(0.3))
                     )
                     .padding(.horizontal, 24)
                     .padding(.bottom, 20)
@@ -83,12 +84,12 @@ struct FoodTrackingView: View {
                                 }) {
                                     Text(mealType)
                                         .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(selectedMealType == mealType ? .white : .primary)
+                                        .foregroundColor(selectedMealType == mealType ? .white : .white)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
                                         .background(
                                             Capsule()
-                                                .fill(selectedMealType == mealType ? Color.blue : Color(.systemGray6))
+                                                .fill(selectedMealType == mealType ? Color.blue : Color.gray.opacity(0.3))
                                         )
                                 }
                             }
@@ -102,7 +103,7 @@ struct FoodTrackingView: View {
                         HStack {
                             Text("Quick Add")
                                 .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.white)
                             
                             Spacer()
                         }
@@ -127,13 +128,13 @@ struct FoodTrackingView: View {
                             HStack {
                                 Text("Today's \(selectedMealType)")
                                     .font(.system(size: 18, weight: .semibold))
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.white)
                                 
                                 Spacer()
                                 
                                 Text("\(selectedFoods.reduce(0) { $0 + $1.calories }) cal")
                                     .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.white.opacity(0.7))
                             }
                             .padding(.horizontal, 24)
                             
@@ -152,7 +153,7 @@ struct FoodTrackingView: View {
                     Spacer(minLength: 100)
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color.black)
         }
         .sheet(isPresented: $showingAddFood) {
             // Add custom food view would go here

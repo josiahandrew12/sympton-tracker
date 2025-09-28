@@ -17,11 +17,11 @@ struct ProfileSetupView: View {
             VStack(spacing: 16) {
                 Text("What's your name?")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("We'll personalize your experience")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
             }
             .padding(.horizontal, 24)
             
@@ -33,7 +33,7 @@ struct ProfileSetupView: View {
                 .padding(.vertical, 16)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.1))
+                        .fill(Color.gray.opacity(0.3))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(isTextFieldFocused ? Color.blue : Color.clear, lineWidth: 2)

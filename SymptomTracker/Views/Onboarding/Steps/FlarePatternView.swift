@@ -22,11 +22,11 @@ struct FlarePatternView: View {
             VStack(spacing: 16) {
                 Text("Flare Patterns")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("How do your symptoms typically behave?")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }

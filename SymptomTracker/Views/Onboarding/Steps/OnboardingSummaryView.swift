@@ -16,11 +16,11 @@ struct OnboardingSummaryView: View {
             VStack(spacing: 16) {
                 Text("Review Your Setup")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("Let's make sure everything looks good")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -38,7 +38,7 @@ struct OnboardingSummaryView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Name: \(stateManager.userName.isEmpty ? "Not provided" : stateManager.userName)")
                                 .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                     }
                     
@@ -53,7 +53,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(stateManager.selectedConditions), id: \.self) { condition in
                                     Text("• \(condition)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -70,7 +70,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(stateManager.selectedSymptoms), id: \.self) { symptom in
                                     Text("• \(symptom)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -85,7 +85,7 @@ struct OnboardingSummaryView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("• \(stateManager.flareFrequency.isEmpty ? "Not selected" : stateManager.flareFrequency)")
                                 .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.7))
                         }
                     }
                     
@@ -100,7 +100,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(stateManager.selectedTriggers), id: \.self) { trigger in
                                     Text("• \(trigger)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -117,7 +117,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(stateManager.selectedRoutines), id: \.self) { routine in
                                     Text("• \(routine)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }
@@ -134,7 +134,7 @@ struct OnboardingSummaryView: View {
                                 ForEach(Array(stateManager.selectedGoals), id: \.self) { goal in
                                     Text("• \(goal)")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.white.opacity(0.7))
                                 }
                             }
                         }

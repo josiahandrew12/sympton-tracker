@@ -33,11 +33,11 @@ struct TriggersView: View {
             VStack(spacing: 16) {
                 Text("Triggers & Routines")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 Text("What would you like to track for insights?")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -47,7 +47,7 @@ struct TriggersView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Triggers to Track")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 VStack(spacing: 12) {
                     ForEach(triggers, id: \.0) { trigger in
@@ -73,7 +73,7 @@ struct TriggersView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Things You Want to Track")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                 
                 VStack(spacing: 12) {
                     ForEach(routines, id: \.0) { routine in
