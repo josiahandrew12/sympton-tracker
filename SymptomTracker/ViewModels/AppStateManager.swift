@@ -33,6 +33,8 @@ class AppStateManager: ObservableObject {
     @Published var symptoms: [SymptomItem] = []
     @Published var sleepLogs: [SleepLog] = []
     @Published var therapySessions: [TherapySession] = []
+    @Published var timelineEntries: [TimelineEntryModel] = []
+    @Published var selectedDate: Date = Date()
     
     // MARK: - Constants
     let availableConditions = [
@@ -74,7 +76,7 @@ class AppStateManager: ObservableObject {
         let logMessage = "\(timestamp): AppStateManager INITIALIZING\n"
         
         if let data = logMessage.data(using: .utf8) {
-            try? data.append(to: logFile)
+            try? data.write(to: logFile, options: .atomic)
         }
         
         self.persistentContainer = PersistenceController.shared.container
@@ -84,7 +86,7 @@ class AppStateManager: ObservableObject {
         
         let completeMessage = "\(DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)): AppStateManager INITIALIZATION COMPLETE\n"
         if let data = completeMessage.data(using: .utf8) {
-            try? data.append(to: logFile)
+            try? data.write(to: logFile, options: .atomic)
         }
     }
     
@@ -207,19 +209,18 @@ class AppStateManager: ObservableObject {
         selectedGoals = Set(profile.goals?.compactMap { ($0 as? UserGoal)?.name } ?? [])
         
         // Load arrays from relationships
-        foodItems = profile.foodItems?.compactMap { item in
-            guard let foodItem = item as? FoodItemEntity else { return nil }
-            return FoodItem(
+        foodItems = (profile.foodItems?.allObjects as? [FoodItemEntity])?.compactMap { foodItem in
+            FoodItem(
                 name: foodItem.name ?? "",
                 calories: Int(foodItem.calories),
                 icon: foodItem.icon ?? "🍎",
-                color: Color.fromData(foodItem.colorData ?? Data()) ?? .defaultRed
+                color: Color.fromData(foodItem.colorData ?? Data()) ?? .defaultRed,
+                mealType: foodItem.mealType ?? "Breakfast"
             )
         } ?? []
         
-        medications = profile.medications?.compactMap { item in
-            guard let medItem = item as? MedicationItemEntity else { return nil }
-            return MedicationItem(
+        medications = (profile.medications?.allObjects as? [MedicationItemEntity])?.compactMap { medItem in
+            MedicationItem(
                 name: medItem.name ?? "",
                 dosage: medItem.dosage ?? "",
                 frequency: medItem.frequency ?? "",
@@ -229,9 +230,8 @@ class AppStateManager: ObservableObject {
             )
         } ?? []
         
-        symptoms = profile.symptomLogs?.compactMap { item in
-            guard let symptomLog = item as? SymptomLogEntity else { return nil }
-            return SymptomItem(
+        symptoms = (profile.symptomLogs?.allObjects as? [SymptomLogEntity])?.compactMap { symptomLog in
+            SymptomItem(
                 name: symptomLog.name ?? "",
                 severity: Int(symptomLog.severity),
                 notes: symptomLog.notes ?? "",
@@ -239,9 +239,8 @@ class AppStateManager: ObservableObject {
             )
         } ?? []
         
-        sleepLogs = profile.sleepLogs?.compactMap { item in
-            guard let sleepLog = item as? SleepLogEntity else { return nil }
-            return SleepLog(
+        sleepLogs = (profile.sleepLogs?.allObjects as? [SleepLogEntity])?.compactMap { sleepLog in
+            SleepLog(
                 sleepHours: sleepLog.sleepHours,
                 quality: Int(sleepLog.quality),
                 notes: sleepLog.notes ?? "",
@@ -249,13 +248,23 @@ class AppStateManager: ObservableObject {
             )
         } ?? []
         
-        therapySessions = profile.therapySessions?.compactMap { item in
-            guard let therapySession = item as? TherapySessionEntity else { return nil }
-            return TherapySession(
+        therapySessions = (profile.therapySessions?.allObjects as? [TherapySessionEntity])?.compactMap { therapySession in
+            TherapySession(
                 type: therapySession.type ?? "",
                 duration: Int(therapySession.duration),
                 notes: therapySession.notes ?? "",
                 date: therapySession.date ?? Date()
+            )
+        } ?? []
+
+        timelineEntries = (profile.timelineEntries?.allObjects as? [TimelineEntry])?.compactMap { entry in
+            TimelineEntryModel(
+                type: TimelineEntryType(rawValue: entry.type ?? "symptom") ?? .symptom,
+                title: entry.title ?? "",
+                subtitle: entry.subtitle ?? "",
+                icon: entry.icon ?? "❓",
+                timestamp: entry.timestamp ?? Date(),
+                data: entry.data
             )
         } ?? []
     }
@@ -420,22 +429,30 @@ class AppStateManager: ObservableObject {
     private func saveFoodItemToCoreData(_ item: FoodItem) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
-        
+
         let foodItem = FoodItemEntity(context: context)
         foodItem.name = item.name
         foodItem.calories = Int32(item.calories)
         foodItem.icon = item.icon
         foodItem.colorData = item.color.toData()
         foodItem.dateAdded = Date()
+        foodItem.mealType = item.mealType
         foodItem.userProfile = profile
-        
+
+        addTimelineEntry(
+            type: .food,
+            title: "\(item.mealType): \(item.name)",
+            subtitle: "\(item.calories) calories",
+            icon: item.icon
+        )
+
         saveContext()
     }
     
     private func saveMedicationToCoreData(_ medication: MedicationItem) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
-        
+
         let medItem = MedicationItemEntity(context: context)
         medItem.name = medication.name
         medItem.dosage = medication.dosage
@@ -445,7 +462,16 @@ class AppStateManager: ObservableObject {
         medItem.isTaken = medication.isTaken
         medItem.dateAdded = Date()
         medItem.userProfile = profile
-        
+
+        if medication.isTaken {
+            addTimelineEntry(
+                type: .medication,
+                title: medication.name,
+                subtitle: "\(medication.dosage) - \(medication.frequency)",
+                icon: medication.icon
+            )
+        }
+
         saveContext()
     }
     
@@ -458,42 +484,93 @@ class AppStateManager: ObservableObject {
     private func saveSymptomToCoreData(_ symptom: SymptomItem) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
-        
+
         let symptomLog = SymptomLogEntity(context: context)
         symptomLog.name = symptom.name
         symptomLog.severity = Int32(symptom.severity)
         symptomLog.notes = symptom.notes
         symptomLog.timestamp = symptom.timestamp
         symptomLog.userProfile = profile
-        
+
+        addTimelineEntry(
+            type: .symptom,
+            title: symptom.name,
+            subtitle: "Severity: \(symptom.severity)/10",
+            icon: "❤️‍🩹"
+        )
+
         saveContext()
     }
     
     private func saveSleepLogToCoreData(_ log: SleepLog) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
-        
+
         let sleepLog = SleepLogEntity(context: context)
         sleepLog.sleepHours = log.sleepHours
         sleepLog.quality = Int32(log.quality)
         sleepLog.notes = log.notes
         sleepLog.date = log.date
         sleepLog.userProfile = profile
-        
+
+        addTimelineEntry(
+            type: .rest,
+            title: "Sleep Log",
+            subtitle: "\(log.sleepHours) hours, Quality: \(log.quality)/10",
+            icon: "😴"
+        )
+
         saveContext()
     }
-    
+
     private func saveTherapySessionToCoreData(_ session: TherapySession) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
-        
+
         let therapySession = TherapySessionEntity(context: context)
         therapySession.type = session.type
         therapySession.duration = Int32(session.duration)
         therapySession.notes = session.notes
         therapySession.date = session.date
         therapySession.userProfile = profile
-        
+
+        addTimelineEntry(
+            type: .therapy,
+            title: session.type,
+            subtitle: "\(session.duration) minutes",
+            icon: "🧠"
+        )
+
         saveContext()
+    }
+
+    func addTimelineEntry(type: TimelineEntryType, title: String, subtitle: String, icon: String, timestamp: Date = Date()) {
+        guard let profile = userProfile else { return }
+        let context = persistentContainer.viewContext
+
+        let entry = TimelineEntry(context: context)
+        entry.id = UUID()
+        entry.type = type.rawValue
+        entry.title = title
+        entry.subtitle = subtitle
+        entry.icon = icon
+        entry.timestamp = timestamp
+        entry.userProfile = profile
+
+        let timelineModel = TimelineEntryModel(
+            type: type,
+            title: title,
+            subtitle: subtitle,
+            icon: icon,
+            timestamp: timestamp
+        )
+
+        timelineEntries.append(timelineModel)
+        timelineEntries.sort { $0.timestamp > $1.timestamp }
+    }
+
+    func getTimelineEntriesForDate(_ date: Date) -> [TimelineEntryModel] {
+        let calendar = Calendar.current
+        return timelineEntries.filter { calendar.isDate($0.timestamp, inSameDayAs: date) }
     }
 }

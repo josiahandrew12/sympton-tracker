@@ -16,13 +16,13 @@ struct ModernActionCard: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 12) {
+            HStack(spacing: 16) {
                 // Icon with gradient background
                 ZStack {
                     Circle()
                         .fill(
                             LinearGradient(
-                                gradient: Gradient(colors: [color.opacity(0.2), color.opacity(0.1)]),
+                                gradient: Gradient(colors: [color.opacity(0.3), color.opacity(0.2)]),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -34,21 +34,19 @@ struct ModernActionCard: View {
                         .foregroundColor(color)
                 }
                 
-                VStack(spacing: 4) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(1)
                     
                     Text(subtitle)
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.system(size: 14, weight: .regular))
                         .foregroundColor(.white.opacity(0.7))
-                        .multilineTextAlignment(.center)
                         .lineLimit(1)
                 }
+                
+                Spacer()
             }
-            .frame(width: 100, height: 120)
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 16)

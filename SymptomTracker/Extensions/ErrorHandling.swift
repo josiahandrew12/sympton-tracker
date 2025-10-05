@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import SwiftUI
 
 // MARK: - App Error Types
 enum AppError: LocalizedError {

@@ -53,30 +53,61 @@ enum AppScreen: CaseIterable {
 
 // MARK: - Food Item Model
 struct FoodItem: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let name: String
     let calories: Int
     let icon: String
     let color: Color
-    
-    init(name: String, calories: Int, icon: String, color: Color) {
+    let mealType: String
+
+    init(name: String, calories: Int, icon: String, color: Color, mealType: String = "Breakfast") {
         self.name = name
         self.calories = calories
         self.icon = icon
         self.color = color
+        self.mealType = mealType
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, calories, icon, mealType, colorData
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        calories = try container.decode(Int.self, forKey: .calories)
+        icon = try container.decode(String.self, forKey: .icon)
+        mealType = try container.decode(String.self, forKey: .mealType)
+
+        if let colorData = try container.decodeIfPresent(Data.self, forKey: .colorData) {
+            color = Color.fromData(colorData) ?? .red
+        } else {
+            color = .red
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(calories, forKey: .calories)
+        try container.encode(icon, forKey: .icon)
+        try container.encode(mealType, forKey: .mealType)
+        try container.encode(color.toData(), forKey: .colorData)
     }
 }
 
 // MARK: - Medication Item Model
 struct MedicationItem: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let name: String
     let dosage: String
     let frequency: String
     let icon: String
     let color: Color
     var isTaken: Bool
-    
+
     init(name: String, dosage: String, frequency: String, icon: String, color: Color, isTaken: Bool = false) {
         self.name = name
         self.dosage = dosage
@@ -85,11 +116,42 @@ struct MedicationItem: Identifiable, Codable {
         self.color = color
         self.isTaken = isTaken
     }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, dosage, frequency, icon, isTaken, colorData
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        dosage = try container.decode(String.self, forKey: .dosage)
+        frequency = try container.decode(String.self, forKey: .frequency)
+        icon = try container.decode(String.self, forKey: .icon)
+        isTaken = try container.decode(Bool.self, forKey: .isTaken)
+
+        if let colorData = try container.decodeIfPresent(Data.self, forKey: .colorData) {
+            color = Color.fromData(colorData) ?? .blue
+        } else {
+            color = .blue
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(dosage, forKey: .dosage)
+        try container.encode(frequency, forKey: .frequency)
+        try container.encode(icon, forKey: .icon)
+        try container.encode(isTaken, forKey: .isTaken)
+        try container.encode(color.toData(), forKey: .colorData)
+    }
 }
 
 // MARK: - Symptom Item Model
 struct SymptomItem: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let name: String
     let severity: Int
     let notes: String
@@ -105,7 +167,7 @@ struct SymptomItem: Identifiable, Codable {
 
 // MARK: - Sleep Log Model
 struct SleepLog: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let sleepHours: Double
     let quality: Int
     let notes: String
@@ -121,7 +183,7 @@ struct SleepLog: Identifiable, Codable {
 
 // MARK: - Therapy Session Model
 struct TherapySession: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let type: String
     let duration: Int
     let notes: String
@@ -132,5 +194,64 @@ struct TherapySession: Identifiable, Codable {
         self.duration = duration
         self.notes = notes
         self.date = date
+    }
+}
+
+// MARK: - Timeline Entry Model
+struct TimelineEntryModel: Identifiable, Codable {
+    var id = UUID()
+    let type: TimelineEntryType
+    let title: String
+    let subtitle: String
+    let icon: String
+    let timestamp: Date
+    let data: Data?
+
+    init(type: TimelineEntryType, title: String, subtitle: String, icon: String, timestamp: Date = Date(), data: Data? = nil) {
+        self.type = type
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = icon
+        self.timestamp = timestamp
+        self.data = data
+    }
+}
+
+// MARK: - Timeline Entry Type Enum
+enum TimelineEntryType: String, CaseIterable, Codable {
+    case symptom = "symptom"
+    case medication = "medication"
+    case food = "food"
+    case therapy = "therapy"
+    case rest = "rest"
+
+    var displayName: String {
+        switch self {
+        case .symptom:
+            return "Symptom"
+        case .medication:
+            return "Medication"
+        case .food:
+            return "Food"
+        case .therapy:
+            return "Therapy"
+        case .rest:
+            return "Rest"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .symptom:
+            return .red
+        case .medication:
+            return .blue
+        case .food:
+            return .green
+        case .therapy:
+            return .purple
+        case .rest:
+            return .orange
+        }
     }
 }

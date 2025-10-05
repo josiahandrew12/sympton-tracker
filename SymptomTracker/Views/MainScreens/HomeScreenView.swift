@@ -9,29 +9,73 @@ import SwiftUI
 
 struct HomeScreenView: View {
     @EnvironmentObject var stateManager: AppStateManager
-    @State private var selectedDate = Date()
-    
+
+    private var weekDates: [Date] {
+        let calendar = Calendar.current
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: stateManager.selectedDate) else {
+            return []
+        }
+
+        var dates: [Date] = []
+        var date = weekInterval.start
+
+        for _ in 0..<7 {
+            dates.append(date)
+            date = calendar.date(byAdding: .day, value: 1, to: date) ?? date
+        }
+
+        return dates
+    }
+
+    private var greeting: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let name = stateManager.userName.isEmpty ? "there" : stateManager.userName
+
+        switch hour {
+        case 5..<12:
+            return "Good morning, \(name)!"
+        case 12..<17:
+            return "Good afternoon, \(name)!"
+        case 17..<21:
+            return "Good evening, \(name)!"
+        default:
+            return "Good night, \(name)!"
+        }
+    }
+
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: 0) {
-                    // Header with Profile
-                    HStack {
-                        Spacer()
-                        
-                        // Profile Avatar
-                        Circle()
-                            .fill(LinearGradient(
-                                gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
-                            .frame(width: 44, height: 44)
-                            .overlay(
-                                Text(stateManager.userName.isEmpty ? "U" : String(stateManager.userName.prefix(1)))
-                                    .font(.system(size: 18, weight: .semibold))
+                    // Header with Greeting and Profile
+                    VStack(spacing: 16) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(greeting)
+                                    .font(.system(size: 24, weight: .bold))
                                     .foregroundColor(.white)
-                            )
+
+                                Text("How are you feeling today?")
+                                    .font(.system(size: 16, weight: .regular))
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+
+                            Spacer()
+
+                            // Profile Avatar
+                            Circle()
+                                .fill(LinearGradient(
+                                    gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .frame(width: 44, height: 44)
+                                .overlay(
+                                    Text(stateManager.userName.isEmpty ? "U" : String(stateManager.userName.prefix(1)))
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(.white)
+                                )
+                        }
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 60)
@@ -55,11 +99,13 @@ struct HomeScreenView: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
-                                ForEach(0..<7) { day in
+                                ForEach(weekDates, id: \.self) { date in
                                     ModernDayCard(
-                                        day: day,
-                                        isSelected: day == 2
-                                    )
+                                        date: date,
+                                        isSelected: Calendar.current.isDate(date, inSameDayAs: stateManager.selectedDate)
+                                    ) {
+                                        stateManager.selectedDate = date
+                                    }
                                 }
                             }
                             .padding(.horizontal, 20)
@@ -210,38 +256,73 @@ struct HomeScreenView: View {
                                     stateManager.navigateTo(.foodTracking)
                                 }
                             )
+                            
+                            ModernActionCard(
+                                icon: "bed.double.fill",
+                                title: "Rest Tracking",
+                                subtitle: "Log your sleep and naps",
+                                color: .purple,
+                                action: {
+                                    stateManager.navigateTo(.restTracking)
+                                }
+                            )
+                            
+                            ModernActionCard(
+                                icon: "brain.head.profile",
+                                title: "Therapy",
+                                subtitle: "Track therapy sessions",
+                                color: .orange,
+                                action: {
+                                    stateManager.navigateTo(.therapyTracking)
+                                }
+                            )
                         }
                         .padding(.horizontal, 24)
                     }
                     .padding(.bottom, 24)
                     
-                    // Reminders Section
+                    // Today's Timeline Section
                     VStack(spacing: 16) {
                         HStack {
-                            Text("Reminders")
+                            Text("Today's Timeline")
                                 .font(.system(size: 20, weight: .semibold))
                                 .foregroundColor(.white)
-                            
+
                             Spacer()
+
+                            Text(DateFormatter.localizedString(from: stateManager.selectedDate, dateStyle: .medium, timeStyle: .none))
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.7))
                         }
                         .padding(.horizontal, 24)
-                        
-                        VStack(spacing: 12) {
-                            ModernReminderCard(
-                                icon: "pills.fill",
-                                title: "Morning Medication",
-                                time: "8:00 AM",
-                                isCompleted: false
-                            )
-                            
-                            ModernReminderCard(
-                                icon: "bed.double.fill",
-                                title: "Bedtime Routine",
-                                time: "10:00 PM",
-                                isCompleted: true
-                            )
+
+                        let todaysEntries = stateManager.getTimelineEntriesForDate(stateManager.selectedDate)
+
+                        if todaysEntries.isEmpty {
+                            VStack(spacing: 12) {
+                                Image(systemName: "calendar.badge.plus")
+                                    .font(.system(size: 40, weight: .light))
+                                    .foregroundColor(.white.opacity(0.3))
+
+                                Text("No entries for this day")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.5))
+
+                                Text("Start tracking your symptoms, medications, or meals")
+                                    .font(.system(size: 14, weight: .regular))
+                                    .foregroundColor(.white.opacity(0.4))
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding(.vertical, 32)
+                            .padding(.horizontal, 24)
+                        } else {
+                            LazyVStack(spacing: 12) {
+                                ForEach(todaysEntries, id: \.id) { entry in
+                                    TimelineEntryCard(entry: entry)
+                                }
+                            }
+                            .padding(.horizontal, 24)
                         }
-                        .padding(.horizontal, 24)
                     }
                     .padding(.bottom, 100) // Extra padding for tab bar
                 }

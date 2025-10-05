@@ -10,6 +10,8 @@ import SwiftUI
 struct SymptomsView: View {
     @EnvironmentObject var stateManager: AppStateManager
     @State private var symptomSeverities: [String: Double] = [:]
+    @State private var customSymptom = ""
+    @State private var showingAddCustom = false
     
     private let symptoms = [
         ("Fatigue", "zzz", Color.orange),
@@ -63,10 +65,97 @@ struct SymptomsView: View {
                         }
                     )
                 }
+
+                // Custom symptoms from the user
+                ForEach(Array(stateManager.selectedSymptoms.subtracting(symptoms.map { $0.0 })), id: \.self) { customSymptom in
+                    SymptomCardWithScale(
+                        symptom: customSymptom,
+                        icon: "plus.circle",
+                        color: .gray,
+                        isSelected: true,
+                        severity: symptomSeverities[customSymptom] ?? 5.0,
+                        onTap: {
+                            stateManager.selectedSymptoms.remove(customSymptom)
+                            symptomSeverities.removeValue(forKey: customSymptom)
+                            stateManager.saveOnboardingData()
+                        },
+                        onSeverityChange: { newValue in
+                            symptomSeverities[customSymptom] = newValue
+                            stateManager.saveOnboardingData()
+                        }
+                    )
+                }
+
+                // Add Custom Symptom Button
+                Button(action: {
+                    showingAddCustom = true
+                }) {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(.blue)
+
+                        Text("Add Custom Symptom")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.blue)
+
+                        Spacer()
+                    }
+                    .padding(16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.blue.opacity(0.1))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                            )
+                    )
+                }
             }
             .padding(.horizontal, 24)
             
             Spacer()
+        }
+        .sheet(isPresented: $showingAddCustom) {
+            NavigationView {
+                VStack(spacing: 24) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Custom Symptom")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+
+                        TextField("Enter symptom name...", text: $customSymptom)
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    .padding(.horizontal, 24)
+
+                    Spacer()
+                }
+                .padding(.top, 24)
+                .navigationTitle("Add Symptom")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Cancel") {
+                            customSymptom = ""
+                            showingAddCustom = false
+                        }
+                    }
+
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Add") {
+                            if !customSymptom.isEmpty {
+                                stateManager.selectedSymptoms.insert(customSymptom)
+                                symptomSeverities[customSymptom] = 5.0
+                                stateManager.saveOnboardingData()
+                                customSymptom = ""
+                                showingAddCustom = false
+                            }
+                        }
+                        .disabled(customSymptom.isEmpty)
+                    }
+                }
+            }
         }
     }
 }

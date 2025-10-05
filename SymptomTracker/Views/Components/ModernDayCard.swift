@@ -8,19 +8,29 @@
 import SwiftUI
 
 struct ModernDayCard: View {
-    let day: Int
+    let date: Date
     let isSelected: Bool
-    
-    private let dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    private let dayNumbers = ["15", "16", "17", "18", "19", "20", "21"]
-    
+    let onTap: () -> Void
+
+    private var dayFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "E"
+        return formatter
+    }
+
+    private var dayNumberFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d"
+        return formatter
+    }
+
     var body: some View {
         VStack(spacing: 10) {
-            Text(dayNames[day])
+            Text(dayFormatter.string(from: date))
                 .font(.system(size: 13, weight: .medium))
                 .foregroundColor(.white.opacity(0.7))
-            
-            Text(dayNumbers[day])
+
+            Text(dayNumberFormatter.string(from: date))
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundColor(isSelected ? .white : .white)
                 .frame(width: 44, height: 44)
@@ -31,5 +41,8 @@ struct ModernDayCard: View {
         }
         .frame(width: 56)
         .padding(.vertical, 8)
+        .onTapGesture {
+            onTap()
+        }
     }
 }

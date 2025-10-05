@@ -18,6 +18,7 @@
         <relationship name="symptomLogs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SymptomLogEntity" inverseName="userProfile" inverseEntity="SymptomLogEntity"/>
         <relationship name="sleepLogs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SleepLogEntity" inverseName="userProfile" inverseEntity="SleepLogEntity"/>
         <relationship name="therapySessions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TherapySessionEntity" inverseName="userProfile" inverseEntity="TherapySessionEntity"/>
+        <relationship name="timelineEntries" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TimelineEntry" inverseName="userProfile" inverseEntity="TimelineEntry"/>
     </entity>
     <entity name="UserCondition" representedClassName="UserCondition" syncable="YES" codeGenerationType="class">
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -45,6 +46,7 @@
         <attribute name="icon" optional="YES" attributeType="String"/>
         <attribute name="colorData" optional="YES" attributeType="Binary"/>
         <attribute name="dateAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="mealType" optional="YES" attributeType="String"/>
         <relationship name="userProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserProfile" inverseName="foodItems" inverseEntity="UserProfile"/>
     </entity>
     <entity name="MedicationItemEntity" representedClassName="MedicationItemEntity" syncable="YES" codeGenerationType="class">
@@ -78,18 +80,29 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="userProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserProfile" inverseName="therapySessions" inverseEntity="UserProfile"/>
     </entity>
+    <entity name="TimelineEntry" representedClassName="TimelineEntry" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="subtitle" optional="YES" attributeType="String"/>
+        <attribute name="icon" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="data" optional="YES" attributeType="Binary"/>
+        <relationship name="userProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserProfile" inverseName="timelineEntries" inverseEntity="UserProfile"/>
+    </entity>
     <elements>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="44"/>
-        <element name="UserProfile" positionX="-63" positionY="-18" width="128" height="179"/>
+        <element name="UserProfile" positionX="-63" positionY="-18" width="128" height="194"/>
         <element name="UserCondition" positionX="-63" positionY="-18" width="128" height="59"/>
         <element name="UserSymptom" positionX="-63" positionY="-18" width="128" height="59"/>
         <element name="UserTrigger" positionX="-63" positionY="-18" width="128" height="59"/>
         <element name="UserRoutine" positionX="-63" positionY="-18" width="128" height="59"/>
         <element name="UserGoal" positionX="-63" positionY="-18" width="128" height="59"/>
-        <element name="FoodItemEntity" positionX="-63" positionY="-18" width="128" height="134"/>
+        <element name="FoodItemEntity" positionX="-63" positionY="-18" width="128" height="149"/>
         <element name="MedicationItemEntity" positionX="-63" positionY="-18" width="128" height="164"/>
         <element name="SymptomLogEntity" positionX="-63" positionY="-18" width="128" height="104"/>
         <element name="SleepLogEntity" positionX="-63" positionY="-18" width="128" height="104"/>
         <element name="TherapySessionEntity" positionX="-63" positionY="-18" width="128" height="104"/>
+        <element name="TimelineEntry" positionX="-63" positionY="-18" width="128" height="149"/>
     </elements>
 </model>

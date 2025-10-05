@@ -10,9 +10,9 @@ import Foundation
 
 extension Color {
     // Convert Color to Data for CoreData storage
-    func toData() -> Data? {
+    func toData() -> Data {
         let uiColor = UIColor(self)
-        return try? NSKeyedArchiver.archivedData(withRootObject: uiColor, requiringSecureCoding: false)
+        return (try? NSKeyedArchiver.archivedData(withRootObject: uiColor, requiringSecureCoding: false)) ?? Data()
     }
     
     // Create Color from Data stored in CoreData
