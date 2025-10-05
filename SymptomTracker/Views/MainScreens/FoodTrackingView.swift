@@ -109,6 +109,7 @@ struct FoodTrackingView: View {
                                             icon: mealEmoji(for: selectedMealType)
                                         )
                                         foodName = ""
+                                        stateManager.navigateTo(.home)
                                     }
                                 }) {
                                     Text("Save \(selectedMealType)")

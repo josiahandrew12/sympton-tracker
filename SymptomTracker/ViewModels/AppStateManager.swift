@@ -573,4 +573,9 @@ class AppStateManager: ObservableObject {
         let calendar = Calendar.current
         return timelineEntries.filter { calendar.isDate($0.timestamp, inSameDayAs: date) }
     }
+    
+    func deleteMedication(_ medication: MedicationItem) {
+        medications.removeAll { $0.id == medication.id }
+        saveOnboardingData()
+    }
 }

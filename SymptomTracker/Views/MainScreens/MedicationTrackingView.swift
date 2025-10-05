@@ -13,103 +13,135 @@ struct MedicationTrackingView: View {
     @State private var newMedicationName = ""
     @State private var newMedicationDosage = ""
     @State private var newMedicationFrequency = "Daily"
-    @State private var commonMedications: [MedicationItem] = [
-        MedicationItem(name: "Ibuprofen", dosage: "200mg", frequency: "As needed", icon: "💊", color: .blue),
-        MedicationItem(name: "Acetaminophen", dosage: "500mg", frequency: "Every 6 hours", icon: "💊", color: .red),
-        MedicationItem(name: "Vitamin D", dosage: "1000 IU", frequency: "Daily", icon: "💊", color: .orange),
-        MedicationItem(name: "Multivitamin", dosage: "1 tablet", frequency: "Daily", icon: "💊", color: .green)
-    ]
     @State private var todaysMedications: [MedicationItem] = []
+    
+    // Load common medications from AppState or use defaults
+    private var commonMedications: [MedicationItem] {
+        stateManager.medications.isEmpty ? [
+            MedicationItem(name: "Ibuprofen", dosage: "200mg", frequency: "As needed", icon: "💊", color: .blue),
+            MedicationItem(name: "Acetaminophen", dosage: "500mg", frequency: "Every 6 hours", icon: "💊", color: .red),
+            MedicationItem(name: "Vitamin D", dosage: "1000 IU", frequency: "Daily", icon: "💊", color: .orange),
+            MedicationItem(name: "Multivitamin", dosage: "1 tablet", frequency: "Daily", icon: "💊", color: .green)
+        ] : stateManager.medications
+    }
     
     private let frequencies = ["Daily", "Twice daily", "Every 6 hours", "As needed", "Weekly"]
     
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Header
-                    HStack {
-                        Button(action: {
-                            stateManager.navigateTo(.home)
-                        }) {
-                            Image(systemName: "arrow.left")
-                                .font(.system(size: 18, weight: .medium))
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // Header
+                        HStack {
+                            Button(action: {
+                                stateManager.navigateTo(.home)
+                            }) {
+                                Image(systemName: "arrow.left")
+                                    .font(.system(size: 18, weight: .medium))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            Spacer()
+                            
+                            Text("Medication Tracking")
+                                .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                showingAddMedication = true
+                            }) {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 18, weight: .medium))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 60)
+                        .padding(.bottom, 20)
+                        
+                        // Today's Medications Section
+                        if !todaysMedications.isEmpty {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Today's Medications")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 24)
+                                
+                                VStack(spacing: 12) {
+                                    ForEach(todaysMedications) { medication in
+                                        TodayMedicationCard(medication: medication)
+                                    }
+                                }
+                                .padding(.horizontal, 24)
+                            }
+                            .padding(.bottom, 24)
                         }
                         
-                        Spacer()
-                        
-                        Text("Medication Tracking")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.white)
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            showingAddMedication = true
-                        }) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 60)
-                    .padding(.bottom, 20)
-                    
-                    // Today's Medications Section
-                    if !todaysMedications.isEmpty {
+                        // Common Medications Section
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Today's Medications")
+                            Text("Common Medications")
                                 .font(.system(size: 20, weight: .semibold))
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 24)
                             
                             VStack(spacing: 12) {
-                                ForEach(todaysMedications) { medication in
-                                    MedicationTrackCard(medication: medication) {
-                                        // Save medication
-                                        stateManager.addTimelineEntry(
-                                            type: .medication,
-                                            title: medication.name,
-                                            subtitle: "\(medication.dosage) - \(medication.frequency)",
-                                            icon: "💊"
-                                        )
-                                        // Remove from today's list
-                                        todaysMedications.removeAll { $0.id == medication.id }
+                                ForEach(commonMedications) { medication in
+                                    CommonMedicationCard(medication: medication) {
+                                        // Add to today's medications
+                                        if !todaysMedications.contains(where: { $0.id == medication.id }) {
+                                            todaysMedications.append(medication)
+                                        }
+                                    } onDelete: {
+                                        stateManager.deleteMedication(medication)
                                     }
                                 }
                             }
                             .padding(.horizontal, 24)
                         }
-                        .padding(.bottom, 24)
+                        .padding(.bottom, 120)
                     }
-                    
-                    // Common Medications Section
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Common Medications")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 24)
-                        
-                        VStack(spacing: 12) {
-                            ForEach(commonMedications) { medication in
-                                CommonMedicationCard(medication: medication) {
-                                    // Add to today's medications
-                                    if !todaysMedications.contains(where: { $0.id == medication.id }) {
-                                        todaysMedications.append(medication)
-                                    }
-                                } onDelete: {
-                                    commonMedications.removeAll { $0.id == medication.id }
-                                }
+                }
+                .background(Color.black)
+                
+                // Save Button (only when there are medications to save)
+                if !todaysMedications.isEmpty {
+                    VStack {
+                        Spacer()
+                        Button(action: {
+                            // Save all medications to timeline
+                            for medication in todaysMedications {
+                                stateManager.addTimelineEntry(
+                                    type: .medication,
+                                    title: medication.name,
+                                    subtitle: "\(medication.dosage)",
+                                    icon: "💊"
+                                )
                             }
+                            todaysMedications.removeAll()
+                            stateManager.navigateTo(.home)
+                        }) {
+                            Text("Save")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.blue)
+                                )
                         }
                         .padding(.horizontal, 24)
+                        .padding(.bottom, 40)
+                        .background(
+                            Color.black.opacity(0.95)
+                                .ignoresSafeArea()
+                        )
                     }
-                    .padding(.bottom, 100)
                 }
             }
-            .background(Color.black)
         }
         .sheet(isPresented: $showingAddMedication) {
             NavigationView {
@@ -170,7 +202,7 @@ struct MedicationTrackingView: View {
                                 icon: "💊",
                                 color: .blue
                             )
-                            commonMedications.append(newMed)
+                            stateManager.addMedication(newMed)
                             newMedicationName = ""
                             newMedicationDosage = ""
                             newMedicationFrequency = "Daily"
@@ -184,9 +216,8 @@ struct MedicationTrackingView: View {
     }
 }
 
-struct MedicationTrackCard: View {
+struct TodayMedicationCard: View {
     let medication: MedicationItem
-    let onSave: () -> Void
     
     var body: some View {
         HStack(spacing: 16) {
@@ -198,24 +229,16 @@ struct MedicationTrackCard: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                 
-                Text("\(medication.dosage) - \(medication.frequency)")
+                Text("\(medication.dosage)")
                     .font(.system(size: 14))
                     .foregroundColor(.white.opacity(0.7))
             }
             
             Spacer()
             
-            Button(action: onSave) {
-                Text("Save")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(
-                        Capsule()
-                            .fill(Color.blue)
-                    )
-            }
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 24))
+                .foregroundColor(.green)
         }
         .padding(16)
         .background(
