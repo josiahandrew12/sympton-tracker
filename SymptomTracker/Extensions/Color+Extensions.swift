@@ -10,17 +10,32 @@ import Foundation
 
 extension Color {
     // Convert Color to Data for CoreData storage
+    // Uses secure coding to prevent potential security vulnerabilities
     func toData() -> Data {
         let uiColor = UIColor(self)
-        return (try? NSKeyedArchiver.archivedData(withRootObject: uiColor, requiringSecureCoding: false)) ?? Data()
+        // Use secure coding for better security
+        if #available(iOS 11.0, *) {
+            return (try? NSKeyedArchiver.archivedData(withRootObject: uiColor, requiringSecureCoding: true)) ?? Data()
+        } else {
+            // Fallback for older iOS versions
+            return (try? NSKeyedArchiver.archivedData(withRootObject: uiColor, requiringSecureCoding: false)) ?? Data()
+        }
     }
     
     // Create Color from Data stored in CoreData
     static func fromData(_ data: Data) -> Color? {
-        guard let uiColor = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor else {
-            return nil
+        if #available(iOS 11.0, *) {
+            guard let uiColor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data) else {
+                return nil
+            }
+            return Color(uiColor)
+        } else {
+            // Fallback for older iOS versions
+            guard let uiColor = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor else {
+                return nil
+            }
+            return Color(uiColor)
         }
-        return Color(uiColor)
     }
     
     // Default colors for fallback

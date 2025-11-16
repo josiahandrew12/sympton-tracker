@@ -8,6 +8,12 @@
 import SwiftUI
 import CoreData
 
+/// Main app state manager that handles all user data and navigation
+/// All UI updates are performed on the main thread via @MainActor annotations on methods
+/// This class manages:
+/// - User profile and onboarding state
+/// - Navigation between screens
+/// - CoreData persistence for all tracked items (symptoms, medications, food, sleep, therapy)
 class AppStateManager: ObservableObject {
     // MARK: - CoreData
     private let persistentContainer: NSPersistentContainer
@@ -66,86 +72,45 @@ class AppStateManager: ObservableObject {
     
     // MARK: - Initialization
     init() {
-        print("🚀 AppStateManager: INITIALIZING...")
-        print("🚀🚀🚀 THIS IS A TEST MESSAGE - IF YOU SEE THIS, LOGGING WORKS!")
-        
-        // Also write to a file to ensure we can see it
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let logFile = documentsPath.appendingPathComponent("debug_log.txt")
-        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
-        let logMessage = "\(timestamp): AppStateManager INITIALIZING\n"
-        
-        if let data = logMessage.data(using: .utf8) {
-            try? data.write(to: logFile, options: .atomic)
-        }
+        AppLogger.info("AppStateManager: Initializing...")
         
         self.persistentContainer = PersistenceController.shared.container
         loadUserData()
-        print("🚀 AppStateManager: INITIALIZATION COMPLETE")
-        print("🚀🚀🚀 INITIALIZATION COMPLETE - LOGGING IS WORKING!")
         
-        let completeMessage = "\(DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)): AppStateManager INITIALIZATION COMPLETE\n"
-        if let data = completeMessage.data(using: .utf8) {
-            try? data.write(to: logFile, options: .atomic)
-        }
+        AppLogger.success("AppStateManager: Initialization complete")
     }
     
     // MARK: - CoreData Methods
     private func loadUserData() {
-        print("📊 LOADING USER DATA...")
+        AppLogger.debug("Loading user data...")
         let context = persistentContainer.viewContext
         let request: NSFetchRequest<UserProfile> = UserProfile.fetchRequest()
         
         do {
             let profiles = try context.fetch(request)
-            print("📊 FOUND \(profiles.count) USER PROFILES")
+            AppLogger.debug("Found \(profiles.count) user profiles")
+            
             if let profile = profiles.first {
-                print("✅ LOADING EXISTING USER DATA")
-                print("   User: \(profile.userName ?? "Unknown")")
-                print("   Onboarding Complete: \(profile.onboardingCompleted)")
-                print("   Conditions: \(profile.conditions?.count ?? 0)")
-                print("   Symptoms: \(profile.symptoms?.count ?? 0)")
-                print("   Triggers: \(profile.triggers?.count ?? 0)")
-                print("   Routines: \(profile.routines?.count ?? 0)")
-                print("   Goals: \(profile.goals?.count ?? 0)")
-                
-                // Print actual data
-                if let conditions = profile.conditions {
-                    for condition in conditions {
-                        if let userCondition = condition as? UserCondition {
-                            print("   - Condition: \(userCondition.name ?? "Unknown")")
-                        }
-                    }
-                }
-                
-                if let symptoms = profile.symptoms {
-                    for symptom in symptoms {
-                        if let userSymptom = symptom as? UserSymptom {
-                            print("   - Symptom: \(userSymptom.name ?? "Unknown")")
-                        }
-                    }
-                }
-                
+                AppLogger.success("Loading existing user data for: \(profile.userName ?? "Unknown")")
                 self.userProfile = profile
                 loadFromUserProfile(profile)
             } else {
-                print("🆕 CREATING NEW USER PROFILE WITH DEFAULTS")
-                // Create default profile with hardcoded values
+                AppLogger.info("Creating new user profile with defaults")
                 createDefaultUserProfile()
             }
         } catch {
-            print("❌ Error loading user data: \(error)")
+            AppLogger.error("Error loading user data: \(error.localizedDescription)")
             createDefaultUserProfile()
         }
     }
     
     private func createDefaultUserProfile() {
-        print("🆕 CREATING DEFAULT USER PROFILE...")
+        AppLogger.debug("Creating default user profile...")
         let context = persistentContainer.viewContext
         let profile = UserProfile(context: context)
         
-        // Set default values
-        profile.userName = "User"
+        // Set default values with validation
+        profile.userName = InputValidator.validateName("User") ?? "User"
         profile.onboardingCompleted = false
         profile.severityLevel = 5.0
         profile.flareFrequency = "Weekly"
@@ -272,34 +237,31 @@ class AppStateManager: ObservableObject {
     private func saveContext() {
         let context = persistentContainer.viewContext
         if context.hasChanges {
-            print("💾 SAVING CONTEXT - Changes detected")
+            AppLogger.debug("Saving context - changes detected")
             do {
                 try context.save()
-                print("✅ CONTEXT SAVED SUCCESSFULLY!")
+                AppLogger.success("Context saved successfully")
             } catch {
-                print("❌ Error saving context: \(error)")
+                AppLogger.error("Error saving context: \(error.localizedDescription)")
             }
         } else {
-            print("💾 No changes to save")
+            AppLogger.debug("No changes to save")
         }
     }
     
     private func saveUserProfile() {
         guard let profile = userProfile else { 
-            print("❌ No userProfile to save!")
+            AppLogger.warning("No userProfile to save!")
             return 
         }
         
-        print("💾 SAVING USER PROFILE...")
-        print("   UserName: \(userName)")
-        print("   OnboardingCompleted: \(!showOnboarding)")
-        print("   SeverityLevel: \(severityLevel)")
-        print("   FlareFrequency: \(flareFrequency)")
+        AppLogger.debug("Saving user profile...")
         
-        profile.userName = userName
+        // Validate and sanitize input before saving
+        profile.userName = InputValidator.validateName(userName) ?? "User"
         profile.onboardingCompleted = !showOnboarding
-        profile.severityLevel = severityLevel
-        profile.flareFrequency = flareFrequency
+        profile.severityLevel = max(0.0, min(10.0, severityLevel)) // Clamp severity level
+        profile.flareFrequency = InputValidator.validateString(flareFrequency, maxLength: 50, allowEmpty: false) ?? "Weekly"
         
         // Clear existing relationships
         profile.conditions = nil
@@ -308,63 +270,71 @@ class AppStateManager: ObservableObject {
         profile.routines = nil
         profile.goals = nil
         
-        // Add new conditions
-        print("   Adding \(selectedConditions.count) conditions:")
+        // Add new conditions with validation
+        AppLogger.debug("Adding \(selectedConditions.count) conditions")
         for conditionName in selectedConditions {
-            let condition = UserCondition(context: persistentContainer.viewContext)
-            condition.name = conditionName
-            condition.userProfile = profile
-            print("     - \(conditionName)")
+            if let validatedName = InputValidator.validateName(conditionName) {
+                let condition = UserCondition(context: persistentContainer.viewContext)
+                condition.name = validatedName
+                condition.userProfile = profile
+            }
         }
         
-        // Add new symptoms
-        print("   Adding \(selectedSymptoms.count) symptoms:")
+        // Add new symptoms with validation
+        AppLogger.debug("Adding \(selectedSymptoms.count) symptoms")
         for symptomName in selectedSymptoms {
-            let symptom = UserSymptom(context: persistentContainer.viewContext)
-            symptom.name = symptomName
-            symptom.userProfile = profile
-            print("     - \(symptomName)")
+            if let validatedName = InputValidator.validateName(symptomName) {
+                let symptom = UserSymptom(context: persistentContainer.viewContext)
+                symptom.name = validatedName
+                symptom.userProfile = profile
+            }
         }
         
-        // Add new triggers
-        print("   Adding \(selectedTriggers.count) triggers:")
+        // Add new triggers with validation
+        AppLogger.debug("Adding \(selectedTriggers.count) triggers")
         for triggerName in selectedTriggers {
-            let trigger = UserTrigger(context: persistentContainer.viewContext)
-            trigger.name = triggerName
-            trigger.userProfile = profile
-            print("     - \(triggerName)")
+            if let validatedName = InputValidator.validateName(triggerName) {
+                let trigger = UserTrigger(context: persistentContainer.viewContext)
+                trigger.name = validatedName
+                trigger.userProfile = profile
+            }
         }
         
-        // Add new routines
-        print("   Adding \(selectedRoutines.count) routines:")
+        // Add new routines with validation
+        AppLogger.debug("Adding \(selectedRoutines.count) routines")
         for routineName in selectedRoutines {
-            let routine = UserRoutine(context: persistentContainer.viewContext)
-            routine.name = routineName
-            routine.userProfile = profile
-            print("     - \(routineName)")
+            if let validatedName = InputValidator.validateName(routineName) {
+                let routine = UserRoutine(context: persistentContainer.viewContext)
+                routine.name = validatedName
+                routine.userProfile = profile
+            }
         }
         
-        // Add new goals
-        print("   Adding \(selectedGoals.count) goals:")
+        // Add new goals with validation
+        AppLogger.debug("Adding \(selectedGoals.count) goals")
         for goalName in selectedGoals {
-            let goal = UserGoal(context: persistentContainer.viewContext)
-            goal.name = goalName
-            goal.userProfile = profile
-            print("     - \(goalName)")
+            if let validatedName = InputValidator.validateName(goalName) {
+                let goal = UserGoal(context: persistentContainer.viewContext)
+                goal.name = validatedName
+                goal.userProfile = profile
+            }
         }
         
         saveContext()
     }
     
     // MARK: - Methods
+    @MainActor
     func completeOnboarding() {
-        print("🎉 COMPLETING ONBOARDING")
+        AppLogger.info("Completing onboarding")
         showOnboarding = false
         currentScreen = .home
         saveUserProfile()
     }
     
+    @MainActor
     func resetOnboarding() {
+        AppLogger.info("Resetting onboarding")
         showOnboarding = true
         currentStep = 0
         userName = ""
@@ -379,30 +349,72 @@ class AppStateManager: ObservableObject {
     }
     
     func saveOnboardingData() {
-        print("💾 SAVING ONBOARDING DATA")
-        print("   Conditions: \(selectedConditions)")
-        print("   Symptoms: \(selectedSymptoms)")
-        print("   Triggers: \(selectedTriggers)")
-        print("   Routines: \(selectedRoutines)")
-        print("   Goals: \(selectedGoals)")
-        print("   UserProfile exists: \(userProfile != nil)")
+        AppLogger.debug("Saving onboarding data")
         saveUserProfile()
     }
     
+    @MainActor
     func navigateTo(_ screen: AppScreen) {
         currentScreen = screen
     }
     
+    @MainActor
     func addFoodItem(_ item: FoodItem) {
-        foodItems.append(item)
-        saveFoodItemToCoreData(item)
+        // Validate input before adding
+        let validation = InputValidator.validateFoodItem(
+            name: item.name,
+            calories: item.calories,
+            mealType: item.mealType
+        )
+        
+        guard let validatedName = validation.name,
+              let validatedMealType = validation.mealType else {
+            AppLogger.warning("Invalid food item data, skipping save")
+            return
+        }
+        
+        let validatedItem = FoodItem(
+            name: validatedName,
+            calories: validation.calories,
+            icon: item.icon,
+            color: item.color,
+            mealType: validatedMealType
+        )
+        
+        foodItems.append(validatedItem)
+        saveFoodItemToCoreData(validatedItem)
     }
     
+    @MainActor
     func addMedication(_ medication: MedicationItem) {
-        medications.append(medication)
-        saveMedicationToCoreData(medication)
+        // Validate input before adding
+        let validation = InputValidator.validateMedication(
+            name: medication.name,
+            dosage: medication.dosage,
+            frequency: medication.frequency
+        )
+        
+        guard let validatedName = validation.name,
+              let validatedDosage = validation.dosage,
+              let validatedFrequency = validation.frequency else {
+            AppLogger.warning("Invalid medication data, skipping save")
+            return
+        }
+        
+        let validatedMedication = MedicationItem(
+            name: validatedName,
+            dosage: validatedDosage,
+            frequency: validatedFrequency,
+            icon: medication.icon,
+            color: medication.color,
+            isTaken: medication.isTaken
+        )
+        
+        medications.append(validatedMedication)
+        saveMedicationToCoreData(validatedMedication)
     }
     
+    @MainActor
     func toggleMedication(_ medication: MedicationItem) {
         if let index = medications.firstIndex(where: { $0.id == medication.id }) {
             medications[index].isTaken.toggle()
@@ -410,22 +422,78 @@ class AppStateManager: ObservableObject {
         }
     }
     
+    @MainActor
     func addSymptom(_ symptom: SymptomItem) {
-        symptoms.append(symptom)
-        saveSymptomToCoreData(symptom)
+        // Validate input before adding
+        let validation = InputValidator.validateSymptom(
+            name: symptom.name,
+            severity: symptom.severity,
+            notes: symptom.notes
+        )
+        
+        guard let validatedName = validation.name else {
+            AppLogger.warning("Invalid symptom data, skipping save")
+            return
+        }
+        
+        let validatedSymptom = SymptomItem(
+            name: validatedName,
+            severity: validation.severity,
+            notes: validation.notes ?? "",
+            timestamp: InputValidator.validateDate(symptom.timestamp)
+        )
+        
+        symptoms.append(validatedSymptom)
+        saveSymptomToCoreData(validatedSymptom)
     }
     
+    @MainActor
     func addSleepLog(_ log: SleepLog) {
-        sleepLogs.append(log)
-        saveSleepLogToCoreData(log)
+        // Validate input before adding
+        let validation = InputValidator.validateSleepLog(
+            hours: log.sleepHours,
+            quality: log.quality,
+            notes: log.notes
+        )
+        
+        let validatedLog = SleepLog(
+            sleepHours: validation.hours,
+            quality: validation.quality,
+            notes: validation.notes ?? "",
+            date: InputValidator.validateDate(log.date)
+        )
+        
+        sleepLogs.append(validatedLog)
+        saveSleepLogToCoreData(validatedLog)
     }
     
+    @MainActor
     func addTherapySession(_ session: TherapySession) {
-        therapySessions.append(session)
-        saveTherapySessionToCoreData(session)
+        // Validate input before adding
+        let validation = InputValidator.validateTherapySession(
+            type: session.type,
+            duration: session.duration,
+            notes: session.notes
+        )
+        
+        guard let validatedType = validation.type else {
+            AppLogger.warning("Invalid therapy session data, skipping save")
+            return
+        }
+        
+        let validatedSession = TherapySession(
+            type: validatedType,
+            duration: validation.duration,
+            notes: validation.notes ?? "",
+            date: InputValidator.validateDate(session.date)
+        )
+        
+        therapySessions.append(validatedSession)
+        saveTherapySessionToCoreData(validatedSession)
     }
     
     // MARK: - CoreData Save Methods
+    @MainActor
     private func saveFoodItemToCoreData(_ item: FoodItem) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
@@ -449,6 +517,7 @@ class AppStateManager: ObservableObject {
         saveContext()
     }
     
+    @MainActor
     private func saveMedicationToCoreData(_ medication: MedicationItem) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
@@ -475,12 +544,14 @@ class AppStateManager: ObservableObject {
         saveContext()
     }
     
+    @MainActor
     private func updateMedicationInCoreData(_ medication: MedicationItem) {
         // This would need to be implemented based on how you want to match medications
         // For now, we'll just save the context
         saveContext()
     }
     
+    @MainActor
     private func saveSymptomToCoreData(_ symptom: SymptomItem) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
@@ -502,6 +573,7 @@ class AppStateManager: ObservableObject {
         saveContext()
     }
     
+    @MainActor
     private func saveSleepLogToCoreData(_ log: SleepLog) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
@@ -523,6 +595,7 @@ class AppStateManager: ObservableObject {
         saveContext()
     }
 
+    @MainActor
     private func saveTherapySessionToCoreData(_ session: TherapySession) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
@@ -544,6 +617,7 @@ class AppStateManager: ObservableObject {
         saveContext()
     }
 
+    @MainActor
     func addTimelineEntry(type: TimelineEntryType, title: String, subtitle: String, icon: String, timestamp: Date = Date()) {
         guard let profile = userProfile else { return }
         let context = persistentContainer.viewContext
@@ -567,13 +641,17 @@ class AppStateManager: ObservableObject {
 
         timelineEntries.append(timelineModel)
         timelineEntries.sort { $0.timestamp > $1.timestamp }
+        
+        saveContext()
     }
 
+    @MainActor
     func getTimelineEntriesForDate(_ date: Date) -> [TimelineEntryModel] {
         let calendar = Calendar.current
         return timelineEntries.filter { calendar.isDate($0.timestamp, inSameDayAs: date) }
     }
     
+    @MainActor
     func deleteMedication(_ medication: MedicationItem) {
         medications.removeAll { $0.id == medication.id }
         saveOnboardingData()

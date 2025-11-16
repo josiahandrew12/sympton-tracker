@@ -7,6 +7,7 @@
 
 import CoreData
 
+/// Manages CoreData persistence for the app
 struct PersistenceController {
     static let shared = PersistenceController()
 
@@ -42,11 +43,11 @@ struct PersistenceController {
         
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                print("❌ CoreData Error: \(error), \(error.userInfo)")
+                AppLogger.error("CoreData Error: \(error.localizedDescription), \(error.userInfo)")
                 // Don't fatalError in production, just log the error
-                // fatalError("Unresolved error \(error), \(error.userInfo)")
+                // In production, we should handle this gracefully
             } else {
-                print("✅ CoreData loaded successfully")
+                AppLogger.success("CoreData loaded successfully")
             }
         })
         

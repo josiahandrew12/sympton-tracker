@@ -86,24 +86,6 @@ extension View {
 }
 
 // MARK: - Logging Utilities
-struct Logger {
-    static func info(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
-        let fileName = URL(fileURLWithPath: file).lastPathComponent
-        print("ℹ️ [\(fileName):\(line)] \(function): \(message)")
-    }
-    
-    static func warning(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
-        let fileName = URL(fileURLWithPath: file).lastPathComponent
-        print("⚠️ [\(fileName):\(line)] \(function): \(message)")
-    }
-    
-    static func error(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
-        let fileName = URL(fileURLWithPath: file).lastPathComponent
-        print("❌ [\(fileName):\(line)] \(function): \(message)")
-    }
-    
-    static func success(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
-        let fileName = URL(fileURLWithPath: file).lastPathComponent
-        print("✅ [\(fileName):\(line)] \(function): \(message)")
-    }
-}
+// Note: Logger has been moved to Utilities/Logger.swift for better organization
+// This typealias maintains backward compatibility
+typealias Logger = AppLogger
