@@ -13,16 +13,6 @@
             continueAfterRunningActions = "No"
             symbolName = "*0x19e250aa8">
             <Locations>
-               <Location
-                  uuid = "B5569F62-069C-4B7D-AEEA-BF9A96866757 - 604bcc5f793e3f5a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "mach_o::Header::forEachLoadCommand(void (load_command const*, bool&amp;) block_pointer) const"
-                  moduleName = "dyld"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "148">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>

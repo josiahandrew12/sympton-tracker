@@ -2,8 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access to let you take photos for your symptom logs.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>We use contacts to help you share your health data with your healthcare providers.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>We use HealthKit to help you track your symptoms and health data in one place.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>We use HealthKit to save your symptom and health tracking data.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to help track environmental factors that may affect your symptoms.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to allow you to add photos to your symptom logs.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>We use reminders to help you remember to log your symptoms and take medications.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We use this information to improve your app experience and provide personalized insights.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
